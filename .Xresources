@@ -1,0 +1,100 @@
+! === fonts
+Xft.autohint    : 0
+Xft.lcdfilter   : lcddefault
+Xft.hintstyle   : hintslight
+Xft.hinting     : 1
+Xft.antialias   : 1
+Xft.rgba      : rgb
+! fixed is the one true font - use iso10646 for unicodee characters
+! *font         : -misc-fixed-medium-r-semicondensed-*-13-*-*-*-*-*-iso10645-1
+
+! === xidle
+! drag pointer to lowe left corner to lock screen
+!XIdle*position  : sw
+! leave it there for 1 sec
+!XIdle*delay     : 1
+! also lock screen after 5 minutes idle
+! XIdle*timeout : 300
+
+! === xlock
+! turn off backlight
+!XLock.dpmsoff       : 1
+! plain whit-on-black lock screen
+!Xlock.description   : off
+!XLock.echokeys      : off
+!XLock.info          :
+!XLock.background    : black
+!XLock.foreground    : green
+!XLock.mode          : blank
+!XLock.username      : username:
+!XLock.password      : password:
+!XLock.font          : -misc-fixed-medium-r-normal-*-13-*-*-*-*-*-iso10645-1
+!XLock.planfont      : -misc-fixed-medium-r-normal-*-13-*-*-*-*-*-iso10645-1
+
+! === xclock
+! digital clock in lower right-hand corner
+XClock*render       : false
+XClock*analog       : false
+XClock*twentyfour   : false
+XClock*padding      : 0
+XClock*geometry     : -2-2
+XClock*font         : -misc-fixed-bold-r-normal-*-13-*-*-*-*-*-iso10645-1
+XClock*height       : 12
+XClock*background   : black
+XClock*foreground   : green
+XClock*borderWidth  : 0
+
+! === colors
+!Xterm*.foreground:   #25FF00
+!Xterm*.background:   #1D101D
+!Xterm*.cursorColor:  #B100C6
+!Xterm*.cursorColor:  #25FF00
+*.foreground:   #25ff00
+*.background:   #1d101d
+*.cursorColor:  #25FF00
+!*.cursorColor:  #B100C6
+*.color0:   #1d101d
+!*.color0:   #282c34
+*.color1:   #d19a66
+*.color2:  #e5c07b
+*.color3:  #98c379
+!*.color4:  #25FF00
+*.color4:  #56b6c2
+*.color5:  #51afef
+*.color6:  #c678dd
+*.color7:  #be5046
+*.color8:   #e06c75
+*.color9:   #353b45
+*.color10:   #3e4451
+*.color11:   #545862
+*.color12:   #565c64
+*.color13:   #abb2bf
+*.color14:   #b6bdca
+*.color15:   #c8ccd5
+*.color16:  #d19a66
+*.color17:  #be5046
+*.color18:  #353b45
+*.color19:  #3e4451
+*.color20:  #565c64
+*.color21:  #b6bdca
+!Xterm*.color1:   #D19A66
+!Xterm*.color2:   #E5C07B
+!Xterm*.color3:   #98C379
+!Xterm*.color4:   #56B6C2
+!Xterm*.color5:   #51AFEF
+!Xterm*.color6:   #C678DD
+!Xterm*.color7:   #BE5046
+!Xterm*.color8:   #E06C75
+!Xterm*.color9:   #353B45
+!Xterm*.color10:   #3E4451
+!Xterm*.color11:   #545862
+!Xterm*.color12:   #565C64
+!Xterm*.color13:   #ABB2BF
+!Xterm*.color14:   #B6BDCA
+!Xterm*.color15:   #C8CCD5
+!Xterm*.color16:   #D19A66
+!Xterm*.color17:   #BE5046
+!Xterm*.color18:   #353B45
+!Xterm*.color19:   #3E4451
+!Xterm*.color20:   #565C64
+!!!Xterm*.color21:   #B6BDCA

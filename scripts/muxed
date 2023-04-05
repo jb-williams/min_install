@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+file="${*}"
+myeditor="$(which nvim)"
+if ! pidof tmux &>/dev/null; then
+    tmux new -s scratch -d \; new -A -s master \; popup -t scratch -E "${myeditor} -p ${file}"
+    exit
+    # 1 1 1
+elif ! tmux list-sessions | grep -qi 'master' &>/dev/null && ! tmux list-sessions | grep -qi 'scratch' &>/dev/null && ! tmux list-sessions | grep -qi 'attached' &>/dev/null; then
+    tmux new -s scratch -d \; new -A -s master \; popup -t scratch -E "${myeditor} -p ${file}"
+    exit
+    # 1 0 1
+elif ! tmux list-sessions | grep -qi 'master' &>/dev/null && tmux list-sessions | grep -qi 'scratch' &>/dev/null && ! tmux list-sessions | grep -qi 'attached' &>/dev/null; then
+    tmux new -A -s master \; popup -t scratch -E "${myeditor} -p ${file}"
+    exit
+    # 1 1 0
+elif ! tmux list-sessions | grep -qi 'master' &>/dev/null && ! tmux list-sessions | grep -qi 'scratch' &>/dev/null && tmux list-sessions | grep -qi 'attached' &>/dev/null; then
+    tmux new -s scratch -d \; new -A -s master \; popup -t scratch -E "${myeditor} -p ${file}"
+    exit
+    # 1 0 0
+elif ! tmux list-sessions | grep -qi 'master' &>/dev/null && tmux list-sessions | grep -qi 'scratch' &>/dev/null && tmux list-sessions | grep -qi 'attached' &>/dev/null; then
+    tmux new -s master -d \; popup -t scratch -E "${myeditor} -p ${file}"
+    exit
+    # 0 1 1
+elif tmux list-sessions | grep -qi 'master' &>/dev/null && ! tmux list-sessions | grep -qi 'scratch' &>/dev/null && ! tmux list-sessions | grep -qi 'attached' &>/dev/null; then
+    tmux new -s scratch -d \; attach -t master \; popup -t scratch -E "${myeditor} -p ${file}"
+    exit
+    # 0 1 0
+elif tmux list-sessions | grep -qi 'master' &>/dev/null && ! tmux list-sessions | grep -qi 'scratch' &>/dev/null && tmux list-sessions | grep -qi 'attached' &>/dev/null; then
+    tmux new -s scratch -d \; popup -t scratch -E "${myeditor} -p ${file}"
+    exit
+    # 0 0 1
+elif tmux list-sessions | grep -qi 'master' &>/dev/null && tmux list-sessions | grep -qi 'scratch' &>/dev/null && ! tmux list-sessions | grep -qi 'attached' &>/dev/null; then
+    tmux attach -t master \; tmux popup -t scratch -E "${myeditor} -p ${file}"
+    exit
+    # 0 0 0
+elif tmux list-sessions | grep -qi 'master' &>/dev/null && tmux list-sessions | grep -qi 'scratch' &>/dev/null && tmux list-sessions | grep -qi 'attached' &>/dev/null; then
+    tmux popup -t scratch -E "${myeditor} -p ${file}"
+    exit
+fi
+exit

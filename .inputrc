@@ -1,0 +1,28 @@
+# Prettyfi
+set colored-stats On
+set colored-completion-prefix On
+
+# Completion settings
+set show-all-if-ambiguous on
+set completion-ignore-case on 
+set completion-display-width 0
+set completion-query-items 1000
+
+# ^C No longer shows on Ctrl-C keypress
+set echo-control-characters off
+
+# "prefix history" search
+"\e[A": history-search-backward
+"\e[B": history-search-forward
+"\e[1;5C": forward-char
+"\e[1;5D": backward-char
+
+## Bash Keybindings
+#"\C-f":"cd /home/binford/.config/"
+
+# Move to Home
+"\C-h":"cd ~\n"
+# Gits dir
+"\C-g":"cd ~/Gits\n"
+# Hop up directories
+#"\C-b":"cd ..\n"

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+dte="$(/usr/bin/date +"%a, %B %d %l:%M%p"| /usr/bin/sed 's/  / /g')"
+/usr/bin/echo "$dte"
+/usr/bin/notify-send -t 3500 "$dte"
+

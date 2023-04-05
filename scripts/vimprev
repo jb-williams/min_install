@@ -1,0 +1,3 @@
+#!/bin/bash
+
+VIMENV=prev /usr/bin/nvim -p "$@"

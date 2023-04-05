@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+#/usr/bin/echo -e "" | /usr/bin/xclip -selection c && echo "" > /tmp/tmpclp.txt
+clipfile="/tmp/tmpclp.txt"
+if [[ -f "$clipfile" ]]
+then
+    /usr/bin/echo -e "" | /usr/bin/xclip -selection c && echo "" > "$clipfile"
+else
+    touch "$clipfile" && chmod 600 "$clipfile" && printf "${green}No ${bold}${orange}Clipman${normal}${green}, empty ${bold}%s${normal}${green} created!\n" "$clipfile"
+    exit 0
+fi
+exit 0

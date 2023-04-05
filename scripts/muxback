@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+program="$(which "$1")"
+editor="$(which nvim)"
+if ! pidof tmux &>/dev/null || ! tmux list-sessions | grep -qi 'scratch' &>/dev/null; then
+    tmux new -s scratch -d \; neww -t scratch "${program} ${*:2} | ${editor} -p -"
+    #tmux new -s scratch -d \; neww -t scratch "$@ | vim -"
+    exit
+else
+    #tmux neww -t scratch "$@ | vim -"
+    tmux neww -t scratch -n "$1" -S "${program} ${*:2} | ${editor} -p -"
+    exit
+fi

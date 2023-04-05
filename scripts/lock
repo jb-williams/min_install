@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+## script made to menu-nize shutdown,reboot,logout in the terminal
+set -eo pipefail
+clear
+
+Option="$(/usr/bin/echo -e "Logout\nSuspend\nReboot\nShutdown\nCancel" | /usr/bin/fzf --prompt="Please Make s Selection : " --border=rounded --margin=10% --color=dark --height 75% --reverse --header="	LOGOUT MENU " --info=hidden --header-first)"
+
+case $Option in
+	Lock)
+		/usr/bin/slock
+		;;
+	Logout)
+        /usr/bin/xfce4-session-logout -l       #### used this if I was using xfce4
+        #kill -9 -1         #### used this if I was using window-manager(CWM)
+		;;
+	Suspend)
+		/usr/bin/systemctl suspend
+		;;
+	Reboot)
+		/usr/bin/doas /sbin/reboot
+		;;
+	Shutdown)
+		/usr/bin/sudo /sbin/shutdown -h now
+		;;
+	*)
+		;;
+esac

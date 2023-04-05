@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+/usr/bin/echo -n "¯\_(ツ)_/¯" | /usr/bin/xclip -selection c

@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+if ! pidof tmux &>/dev/null; then
+    tmux new -s scratch -d \; new -A -s master \; list-sessions
+    exit
+    # 1 1 1
+elif ! tmux list-sessions | grep -qi 'master' &>/dev/null && ! tmux list-sessions | grep -qi 'scratch' &>/dev/null && ! tmux list-sessions | grep -qi 'attached' &>/dev/null; then
+    tmux new -s scratch -d \; new -A -s master \; list-sessions
+    exit
+    # 1 0 1
+elif ! tmux list-sessions | grep -qi 'master' &>/dev/null && tmux list-sessions | grep -qi 'scratch' &>/dev/null && ! tmux list-sessions | grep -qi 'attached' &>/dev/null; then
+    tmux new -A -s master \; list-sessions
+    exit
+    # 1 1 0
+elif ! tmux list-sessions | grep -qi 'master' &>/dev/null && ! tmux list-sessions | grep -qi 'scratch' &>/dev/null && tmux list-sessions | grep -qi 'attached' &>/dev/null; then
+    tmux new -s scratch -d \; new -A -s master \; list-sessions
+    exit
+    # 1 0 0
+elif ! tmux list-sessions | grep -qi 'master' &>/dev/null && tmux list-sessions | grep -qi 'scratch' &>/dev/null && tmux list-sessions | grep -qi 'attached' &>/dev/null; then
+    tmux new -s master -d
+    exit
+    # 0 1 1
+elif tmux list-sessions | grep -qi 'master' &>/dev/null && ! tmux list-sessions | grep -qi 'scratch' &>/dev/null && ! tmux list-sessions | grep -qi 'attached' &>/dev/null; then
+    tmux new -s scratch -d \; attach -t master \; list-sessions
+    exit
+    # 0 1 0
+elif tmux list-sessions | grep -qi 'master' &>/dev/null && ! tmux list-sessions | grep -qi 'scratch' &>/dev/null && tmux list-sessions | grep -qi 'attached' &>/dev/null; then
+    tmux new -s scratch -d
+    exit
+    # 0 0 1
+elif tmux list-sessions | grep -qi 'master' &>/dev/null && tmux list-sessions | grep -qi 'scratch' &>/dev/null && ! tmux list-sessions | grep -qi 'attached' &>/dev/null; then
+    tmux attach -t master \; choose-tree
+    exit
+    # 0 0 0
+elif tmux list-sessions | grep -qi 'master' &>/dev/null && tmux list-sessions | grep -qi 'scratch' &>/dev/null && tmux list-sessions | grep -qi 'attached' &>/dev/null; then
+    read -r -p "New sesh(name): " newSession
+    if [[ -z "$newSession" ]]; then
+        tmux choose-tree
+        exit
+    else
+        tmux new -s "$newSession" -d \; switch-session -t "$newSession" \; list-sessions
+        exit
+    fi
+fi
+exit
