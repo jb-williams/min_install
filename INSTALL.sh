@@ -276,8 +276,8 @@ install_golang() {
 install_rust() {
     if ! which cargo &> /dev/null; then
         /usr/bin/curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-        source "$HOME/.cargo/env"
-        source "$HOME/.bashrc"
+        source "$HOME/.cargo/env" 2>/dev/null
+        source "$HOME/.bashrc" 2>/dev/null
     else
         printf "Rust is Already Installed..."
     fi
@@ -435,8 +435,8 @@ setup_userDots() {
         linkDotfile .xsession
         linkDotfile scripts
 
-        source "$HOME"/.bashrc
-        source "$HOME"/.vimrc
+        source "$HOME"/.bashrc 2>/dev/null
+        source "$HOME"/.vimrc 2>/dev/null
 
 }
 ###########################################
