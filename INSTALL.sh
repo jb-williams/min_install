@@ -23,42 +23,42 @@ error_print() {
 change_umask() { printf "\n%b%b%s%b\n" "${default}" "${green}" "Setting Umask...." "${default}"
     ##sed -i 's/022/027/g' /etc/login.defs 2>/dev/null \
     sudo sed -i 's/022/027/g' /etc/login.defs \
-        || error_print "${FUNCNAME[idx]}" && return
+        || error_print "${FUNCNAME[idx]}" 
 }
 
 backup_sources() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Backing up sources.list...." "${default}"
     #cp /etc/apt/sources.list /etc/apt/sources.list.bak 2>/dev/null \
     sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak \
-        || error_print "${FUNCNAME[idx]}" && return
+        || error_print "${FUNCNAME[idx]}" 
 }
 
 add_non_free() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Adding Non-Free Repos..." "${default}"
     #sed -i 's/main contrib/main contrib non-free/g' /etc/apt/sources.list 2>/dev/null \
     sudo sed -i 's/main contrib/main contrib non-free/g' /etc/apt/sources.list \
-        || error_print "${FUNCNAME[idx]}" && return
+        || error_print "${FUNCNAME[idx]}" 
 }
 
 change_testing() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Changing sources to Testing..." "${default}"
     #sed -i 's/bullseye/testing/g' /etc/apt/sources.list 2>/dev/null \
     sudo sed -i 's/bullseye/testing/g' /etc/apt/sources.list \
-        || error_print "${FUNCNAME[idx]}" && return
+        || error_print "${FUNCNAME[idx]}" 
 }
 
 add_i386() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Adding i386 architecture..." "${default}"
     #dpkg --add-architecture i386 2>/dev/null \
     sudo dpkg --add-architecture i386 \
-        || error_print "${FUNCNAME[idx]}" && return
+        || error_print "${FUNCNAME[idx]}" 
 }
 
 update_apt() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Updating Apt..." "${default}"
     #apt update -y 2>/dev/null \
     sudo apt update -y \
-        || error_print "${FUNCNAME[idx]}" && return
+        || error_print "${FUNCNAME[idx]}" 
 }
 
 setup_ssh_moduli() {
@@ -66,21 +66,21 @@ setup_ssh_moduli() {
     sudo cp --archive /etc/ssh/moduli /etc/ssh/moduli-COPY-"$(date +'%Y%m%d%H%M%S')"
     #sed -i 's/^\#HostKey \/etc\/ssh\/ssh_host_\(rsa\|ed25519\)_key$/HostKey \/etc\/ssh\/ssh_host_\1_key/g' /etc/ssh/sshd_config 2>/dev/null \
     sudo sed -i 's/^\#HostKey \/etc\/ssh\/ssh_host_\(rsa\|ed25519\)_key$/HostKey \/etc\/ssh\/ssh_host_\1_key/g' /etc/ssh/sshd_config \
-        || error_print "${FUNCNAME[idx]}" && return
+        || error_print "${FUNCNAME[idx]}" 
     #awk '$5 >= 3071' /etc/ssh/moduli > /etc/ssh/moduli.safe 2>/dev/null \
     #sudo awk '$5 >= 3071' /etc/ssh/moduli > /etc/ssh/moduli.safe \
     sudo awk '$5 >= 3071' /etc/ssh/moduli | sudo tee /etc/ssh/moduli.safe \
-        || error_print "${FUNCNAME[idx]}" && return
+        || error_print "${FUNCNAME[idx]}" 
     #mv -f /etc/ssh/moduli.safe /etc/ssh/moduli 2>/dev/null \
     sudo mv -f /etc/ssh/moduli.safe /etc/ssh/moduli \
-        || error_print "${FUNCNAME[idx]}" && return
+        || error_print "${FUNCNAME[idx]}" 
 }
 
 setup_harden_ssh_conf() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Hardening SSH..." "${default}"
     #echo -e "\n# Restrict key exchange, cipher, and MAC algorithms, as per sshaudit.com\n# hardening guide.\nKexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha256\nCiphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr\nMACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,umac-128-etm@openssh.com\nHostKeyAlgorithms ssh-ed25519,ssh-ed25519-cert-v01@openssh.com,sk-ssh-ed25519@openssh.com,sk-ssh-ed25519-cert-v01@openssh.com,rsa-sha2-256,rsa-sha2-512,rsa-sha2-256-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com" > /etc/ssh/sshd_config.d/ssh-audit_hardening.conf 2> /dev/null \
     sudo echo -e "\n# Restrict key exchange, cipher, and MAC algorithms, as per sshaudit.com\n# hardening guide.\nKexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha256\nCiphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr\nMACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,umac-128-etm@openssh.com\nHostKeyAlgorithms ssh-ed25519,ssh-ed25519-cert-v01@openssh.com,sk-ssh-ed25519@openssh.com,sk-ssh-ed25519-cert-v01@openssh.com,rsa-sha2-256,rsa-sha2-512,rsa-sha2-256-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com" | sudo tee /etc/ssh/sshd_config.d/ssh-audit_hardening.conf \
-        || error_print "${FUNCNAME[idx]}" && return
+        || error_print "${FUNCNAME[idx]}" 
 }
 
 setup_ssh_conf() {
@@ -88,61 +88,61 @@ setup_ssh_conf() {
     sudo cp --archive /etc/sshd_config /etc/ssh/sshd_config-COPY-"$(date +'%Y%m%d%H%M%S')"
     #sed -i 's/#LogLevel INFO/LogLevel VERBOSE/g' /etc/ssh/sshd_config 2>/dev/null \
     sudo sed -i 's/#LogLevel INFO/LogLevel VERBOSE/g' /etc/ssh/sshd_config \
-        || error_print "${FUNCNAME[idx]}" && return
+        || error_print "${FUNCNAME[idx]}" 
     #sed -i 's/#PermitRootLogin prohibit-passowrd/PermitRootLogin no/g' /etc/ssh/sshd_config 2>/dev/null \
     sudo sed -i 's/#PermitRootLogin prohibit-passowrd/PermitRootLogin no/g' /etc/ssh/sshd_config \
-        || error_print "${FUNCNAME[idx]}" && return
+        || error_print "${FUNCNAME[idx]}" 
     #sed -i 's/#MaxAuthTries 6/MaxAuthTries 3/g' /etc/ssh/sshd_config 2>/dev/null \
     sudo sed -i 's/#MaxAuthTries 6/MaxAuthTries 3/g' /etc/ssh/sshd_config \
-        || error_print "${FUNCNAME[idx]}" && return
+        || error_print "${FUNCNAME[idx]}" 
     #sed -i 's/#MaxSessions 10/MaxSessions 2/g' /etc/ssh/sshd_config 2>/dev/null \
     sudo sed -i 's/#MaxSessions 10/MaxSessions 2/g' /etc/ssh/sshd_config \
-        || error_print "${FUNCNAME[idx]}" && return
+        || error_print "${FUNCNAME[idx]}" 
     #sed -i 's/AllowAgentForwarding yes/AllowAgentForwarding no/g' /etc/ssh/sshd_config 2>/dev/null \
     sudo sed -i 's/AllowAgentForwarding yes/AllowAgentForwarding no/g' /etc/ssh/sshd_config \
-        || error_print "${FUNCNAME[idx]}" && return
+        || error_print "${FUNCNAME[idx]}" 
     #sed -i 's/#AllowTcpForwarding yes/AllowTcpForwarding no/g' /etc/ssh/sshd_config 2>/dev/null \
     sudo sed -i 's/#AllowTcpForwarding yes/AllowTcpForwarding no/g' /etc/ssh/sshd_config \
-        || error_print "${FUNCNAME[idx]}" && return
+        || error_print "${FUNCNAME[idx]}" 
     #sed -i 's/X11Forwarding yes/X11Forwarding no/g' /etc/ssh/sshd_config 2>/dev/null \
     sudo sed -i 's/X11Forwarding yes/X11Forwarding no/g' /etc/ssh/sshd_config \
-        || error_print "${FUNCNAME[idx]}" && return
+        || error_print "${FUNCNAME[idx]}" 
 }
 
 restart_ssh() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Restarting SSH..." "${default}"
     #systemctl restart sshd 2>/dev/null \
     sudo systemctl restart sshd \
-        || error_print "${FUNCNAME[idx]}" && return
+        || error_print "${FUNCNAME[idx]}" 
 }
 
 setup_fail2ban() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Configuring Fail2ban..." "${default}"
     #cp /etc/fail2ban/fail2ban.conf /etc/fail2ban/fail2ban.local 2>/dev/null \
     sudo cp /etc/fail2ban/fail2ban.conf /etc/fail2ban/fail2ban.local \
-        || error_print "${FUNCNAME[idx]}" && return
+        || error_print "${FUNCNAME[idx]}" 
     #cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local 2>/dev/null \
     sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local \
-        || error_print "${FUNCNAME[idx]}" && return
+        || error_print "${FUNCNAME[idx]}" 
     #sed -i 's/#ignoreip = 127.0.0.1/8 ::1/ignoreip = 127.0.0.1/8 ::1/g' /etc/fail2ban/jail.local 2>/dev/null \
     sudo sed -i 's/#ignoreip = 127.0.0.1/8 ::1/ignoreip = 127.0.0.1/8 ::1/g' /etc/fail2ban/jail.local \
-        || error_print "${FUNCNAME[idx]}" && return
+        || error_print "${FUNCNAME[idx]}" 
     #sed -i 's/findtime = 10m/findtime = 15m/g' /etc/fail2ban/jail.local 2>/dev/null \
     sudo sed -i 's/findtime = 10m/findtime = 15m/g' /etc/fail2ban/jail.local \
-        || error_print "${FUNCNAME[idx]}" && return
+        || error_print "${FUNCNAME[idx]}" 
     #sed -i 's/maxretry = 5/maxretry = 3/g' /etc/fail2ban/jail.local 2>/dev/null \
     sudo sed -i 's/maxretry = 5/maxretry = 3/g' /etc/fail2ban/jail.local \
-        || error_print "${FUNCNAME[idx]}" && return
+        || error_print "${FUNCNAME[idx]}" 
 }
 
 #setup_sendmail() {
 #    printf "\n%b%b%s%b\n" "${default}" "${green}" "Configuring SendMail for Fail2ban..." "${default}"
     #sed -i 's/destmail = root@locahost/destmail = <mail>/g' /etc/fail2ban/jail.local 2>/dev/null \
 #    sudo sed -i 's/destmail = root@locahost/destmail = <mail>/g' /etc/fail2ban/jail.local \
-#        || error_print "${FUNCNAME[idx]}" && return
+#        || error_print "${FUNCNAME[idx]}" 
     #sed -i 's/sender = root@<fq-hostname>/sender = <sendermail>/g' /etc/fail2ban/jail.local 2>/dev/null \
 #    sudo sed -i 's/sender = root@<fq-hostname>/sender = <sendermail>/g' /etc/fail2ban/jail.local \
-#        || error_print "${FUNCNAME[idx]}" && return
+#        || error_print "${FUNCNAME[idx]}" 
 #}
 
 recheck_updates_cleanup() {
@@ -246,12 +246,12 @@ install_GUI() {
 
 setup_slock() {
     if which slock 2>/dev/null; then
-        printf '%s "%s"\n\t%s\t"%s"\t"%s"\n\t%s\t"%s"\t"%s"\n%s\n' "Section" "ServerFlags" "Option" "DontVTSwitch" "True" "Option" "DontZap" "True" "EndSection" || error_print "${FUNCNAME[idx]}" && return
+        printf '%s "%s"\n\t%s\t"%s"\t"%s"\n\t%s\t"%s"\t"%s"\n%s\n' "Section" "ServerFlags" "Option" "DontVTSwitch" "True" "Option" "DontZap" "True" "EndSection" || error_print "${FUNCNAME[idx]}" 
     elif ! which slock 2>/dev/null; then
-        sudo apt install suckless-tools || error_print "${FUNCNAME[idx]}" && return
-        setup_slock || error_print "${FUNCNAME[idx]}" && return
+        sudo apt install suckless-tools || error_print "${FUNCNAME[idx]}" 
+        setup_slock || error_print "${FUNCNAME[idx]}" 
     else
-        error_print "${FUNCNAME[idx]}" && return
+        error_print "${FUNCNAME[idx]}" 
     fi
 }
 
@@ -259,7 +259,7 @@ install_golang() {
     VERSION="$(curl https://go.dev/dl/ | grep -iE '<span>go[0-9].[0-9]{2}.[0-9]{1,2}.linux-amd64.tar.gz' | sed -e 's/<[^>]*.//g' | tr -d ' ')"
     read -p "Curl read Current Go Version as \"$VERSION\" : Would you like to Continue?(Y/n): " -n 1 -r
     if [[ "$REPLY" =~ ^[Yy]$ ]]; then
-        pushd /tmp || error_print "${FUNCNAME[idx]}" && return
+        pushd /tmp || error_print "${FUNCNAME[idx]}" 
         wget https://go.dev/dl/"$VERSION"
         tar xvfz "$VERSION"
         if [[ -d /usr/local/go ]]; then
@@ -269,7 +269,7 @@ install_golang() {
         else 
             sudo mv -i go /usr/local/
         fi
-        popd || error_print "${FUNCNAME[idx]}" && return
+        popd || error_print "${FUNCNAME[idx]}" 
     fi
 }
 
@@ -302,12 +302,12 @@ install_rust() {
             && sudo mkdir -p /usr/local/share/man/man1 \
             && gzip -c extra/alacritty.man | sudo tee /usr/local/share/man/man1/alacritty.1.gz > /dev/null \
             && gzip -c extra/alacritty-msg.man | sudo tee /usr/local/share/man/man1/alacritty-msg.1.gz > /dev/null
-        popd || error_print "${FUNCNAME[idx]}" && return
+        popd || error_print "${FUNCNAME[idx]}" 
     fi
     read -p "Would you like to install rust programs for pentest?(Y/n): " -n 1 -r
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         cargo install feroxbuster rustscan \
-            || error_print "install_pentest" && return
+            || error_print "install_pentest" 
     fi
 }
 
@@ -389,7 +389,7 @@ install_BraveBrowser() {
 
 setup_userDots() {
     
-        pushd "${HOME}"/Gits || error_print "${FUNCNAME[idx]}" && return
+        pushd "${HOME}"/Gits || error_print "${FUNCNAME[idx]}" 
         dotfilesDir="${HOME}/Gits/min_install"
 
         linkDotfile() {
@@ -453,70 +453,70 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     read -p "Would you like to change umask to 27?(Y/n): " -n 1 -r
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         change_umask \
-            || error_print "change_umask" && return
+            || error_print "change_umask" 
     fi
 
     reset2green
     read -p "Would you like to add non-free sources?(Y/n): " -n 1 -r
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         backup_sources \
-            || error_print "backup_sources" && return
+            || error_print "backup_sources" 
         add_non_free \
-            || error_print "add_non_free" && return
+            || error_print "add_non_free" 
     fi
 
     reset2green
     read -p "Would you like to change sources to testing?(Y/n): " -n 1 -r
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         backup_sources \
-            || error_print "backup_sources" && return
+            || error_print "backup_sources" 
         change_testing \
-            || error_print "change_testing" && return
+            || error_print "change_testing" 
     fi
 
     reset2green
     read -p "Would you like to add i386?(Y/n): " -n 1 -r
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         add_i386 \
-            || error_print "add_i386" && return
+            || error_print "add_i386" 
     fi
 
     update_apt \
-        || error_print "update_apt" && return
+        || error_print "update_apt" 
     install_minimal \
-        || error_print "install_minimal" && return
+        || error_print "install_minimal" 
     setup_ssh_moduli \
-        || error_print "setup_ssh_moduli" && return
+        || error_print "setup_ssh_moduli" 
     setup_harden_ssh_conf \
-        || error_print "setup_harden_ssh_conf" && return
+        || error_print "setup_harden_ssh_conf" 
     setup_ssh_conf \
-        || error_print "setup_ssh_conf" && return
+        || error_print "setup_ssh_conf" 
     restart_ssh \
-        || error_print "restart_ssh" && return
+        || error_print "restart_ssh" 
     setup_logrotate \
-        || error_print "setup_logrotate" && return
+        || error_print "setup_logrotate" 
     setup_fail2ban \
-        || error_print "setup_fail2ban" && return
+        || error_print "setup_fail2ban" 
     #setup_sendmail \
-        #|| error_print "${FUNCNAME[idx]}" && return
+        #|| error_print "${FUNCNAME[idx]}" 
 
     reset2green
     read -p "Would you like to install basic packages?(Y/n): " -n 1 -r
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         install_base_packages \
-            || error_print "install_base_packages" && return
+            || error_print "install_base_packages" 
     fi
 
     reset2green
     read -p "Would you like to install GUI packages?(Y/n): " -n 1 -r
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         install_GUI \
-            || error_print "install_GUI" && return
+            || error_print "install_GUI" 
 
         reset2green
         read -p "Would you like to setup slock?(Y/n): " -n 1 -r
         if [[ $REPLY =~ ^[Yy]$ ]]; then
-            setup_slock || error_print "setup_slock" && return
+            setup_slock || error_print "setup_slock" 
         fi
 
         reset2green
@@ -525,12 +525,12 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
             read -p "Would you like to install Stable?(Y/n): " -n 1 -r
             if [[ $REPLY =~ ^[Yy]$ ]]; then
                 install_LibreWolfStable \
-                    || error_print "install_librewolf" && return
+                    || error_print "install_librewolf" 
             else
                 read -p "Would you like to install Unstable?(Y/n): " -n 1 -r
                 if [[ $REPLY =~ ^[Yy]$ ]]; then
                     install_LibreWolfUnstable \
-                        || error_print "install_librewolf" && return
+                        || error_print "install_librewolf" 
                 fi
             fi
         fi
@@ -539,21 +539,21 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
         read -p "Would you like to install Brave?(Y/n): " -n 1 -r
         if [[ $REPLY =~ ^[Yy]$ ]]; then
             install_BraveBrowser \
-                || error_print "install_brave" && return
+                || error_print "install_brave" 
         fi
 
         reset2green
         read -p "Would you like to install Steam?(Y/n): " -n 1 -r
         if [[ $REPLY =~ ^[Yy]$ ]]; then
             install_Steam \
-                || error_print "install_steam" && return
+                || error_print "install_steam" 
         fi
         
         reset2green
         read -p "Would you like to install VSCode?(Y/n): " -n 1 -r
         if [[ $REPLY =~ ^[Yy]$ ]]; then
             install_VsCode \
-                || error_print "install_vscode" && return
+                || error_print "install_vscode" 
         fi
     fi
 
@@ -561,14 +561,14 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     read -p "Would you like to install golang?(Y/n): " -n 1 -r
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         install_golang \
-            || error_print "install_golang" && return
+            || error_print "install_golang" 
     fi
 
     reset2green
     read -p "Would you like to install rust?(Y/n): " -n 1 -r
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         install_rust \
-            || error_print "install_rust" && return
+            || error_print "install_rust" 
     fi
 
     reset2green
@@ -578,18 +578,18 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
         mkdir -p "$HOME"/{Desktop,Downloads,Documents,deb,Gits,go/src,Pictures,Music,Video}
         if [[ -d "${HOME}"/Gits ]]; then
             install_userDots \
-                || error_print "setup_userDots" && return
+                || error_print "setup_userDots" 
         else
             mkdir -p "$HOME"/Gits
             install_userDots \
-                || error_print "setup_userDots" && return
+                || error_print "setup_userDots" 
 
         fi
     fi
 
     reset2green
     recheck_updates_cleanup \
-        || error_print "recheck_updates_cleanup" && return
+        || error_print "recheck_updates_cleanup" 
 
     ###################
     ####### END #######
