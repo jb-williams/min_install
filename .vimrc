@@ -121,6 +121,7 @@ nnoremap <leader>sop :source %<CR>
 "" Copy/Paste,,, copy copys whole line // need to fix sometime
 "vnoremap <leader>y  mm:w!xclip -i -sel clip<CR>`m
 vnoremap <leader>y :!xclip -f -sel clip<CR>
+vnoremap <leader>x :!xclip -f -sel clip<CR>:!cpclpxf<CR><ENTER>
 "map <leader>p mm:-1r !xclip -o<CR>`m
 map <leader>p mm:-1r !xclip -o -sel clip<CR>`m
 
