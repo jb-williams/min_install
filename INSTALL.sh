@@ -5,12 +5,27 @@
 #!!!!!!!!!!!!!!!!!!! USE AT OWN RISK !!!!!!!!!!!!!!!!!!!#
 ## !! This is a test install script for Debian !!
 # Updated: Mon Mar 13 12:38:39 PM CDT 2023
+# !!!!!!! ASSUMES gits are held in ~/Gits !!!!!!
+# Easily changed in the function cloning_git below
 bold='\e[1m'
 red='\e[31m'
 lightyellow='\e[93m'
 blink='\e[5m'
 default='\e[0;39m'
 green='\e[32m'
+
+cloning_git() {
+    printf "%b%s%b\n" "${default}${green}" "Cloning repo into ~/Gits/min_install....." "${default}"
+    if [[ ! -d "$HOME/Gits" ]]; then
+        mkdir -p "$HOME/Gits"; cd "$_" || error_print "Error Making/Moving to Git Dir" && exit 1
+        git clone https://github.com/jb-williams/min_install.git
+        cd "$_" || error_print "Error Cloning/Moving to Repo Dir" && exit 1
+    else
+        git clone https://github.com/jb-williams/min_install.git
+        cd "$_" || error_print "Error Cloning/Moving to Repo Dir" && exit 1
+    fi
+    return
+}
 
 reset2green() {
     printf "%b%b" "\e[0;39m" "\e[32m"
@@ -21,42 +36,36 @@ error_print() {
 }
 
 change_umask() { printf "\n%b%b%s%b\n" "${default}" "${green}" "Setting Umask...." "${default}"
-    ##sed -i 's/022/027/g' /etc/login.defs 2>/dev/null \
-    sudo sed -i 's/022/027/g' /etc/login.defs \
+    sudo sed -i 's/022/027/g' /etc/login.defs 2>/dev/null \
         || error_print "${FUNCNAME[idx]}" 
 }
 
 backup_sources() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Backing up sources.list...." "${default}"
-    #cp /etc/apt/sources.list /etc/apt/sources.list.bak 2>/dev/null \
     sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak \
         || error_print "${FUNCNAME[idx]}" 
 }
 
 add_non_free() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Adding Non-Free Repos..." "${default}"
-    #sed -i 's/main contrib/main contrib non-free/g' /etc/apt/sources.list 2>/dev/null \
     sudo sed -i 's/main contrib/main contrib non-free/g' /etc/apt/sources.list \
         || error_print "${FUNCNAME[idx]}" 
 }
 
 change_testing() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Changing sources to Testing..." "${default}"
-    #sed -i 's/bullseye/testing/g' /etc/apt/sources.list 2>/dev/null \
     sudo sed -i 's/bullseye/testing/g' /etc/apt/sources.list \
         || error_print "${FUNCNAME[idx]}" 
 }
 
 add_i386() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Adding i386 architecture..." "${default}"
-    #dpkg --add-architecture i386 2>/dev/null \
     sudo dpkg --add-architecture i386 \
         || error_print "${FUNCNAME[idx]}" 
 }
 
 update_apt() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Updating Apt..." "${default}"
-    #apt update -y 2>/dev/null \
     sudo apt update -y \
         || error_print "${FUNCNAME[idx]}" 
 }
@@ -64,21 +73,16 @@ update_apt() {
 setup_ssh_moduli() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Setting up SSH moduli..." "${default}"
     sudo cp --archive /etc/ssh/moduli /etc/ssh/moduli-COPY-"$(date +'%Y%m%d%H%M%S')"
-    #sed -i 's/^\#HostKey \/etc\/ssh\/ssh_host_\(rsa\|ed25519\)_key$/HostKey \/etc\/ssh\/ssh_host_\1_key/g' /etc/ssh/sshd_config 2>/dev/null \
     sudo sed -i 's/^\#HostKey \/etc\/ssh\/ssh_host_\(rsa\|ed25519\)_key$/HostKey \/etc\/ssh\/ssh_host_\1_key/g' /etc/ssh/sshd_config \
         || error_print "${FUNCNAME[idx]}" 
-    #awk '$5 >= 3071' /etc/ssh/moduli > /etc/ssh/moduli.safe 2>/dev/null \
-    #sudo awk '$5 >= 3071' /etc/ssh/moduli > /etc/ssh/moduli.safe \
     sudo awk '$5 >= 3071' /etc/ssh/moduli | sudo tee /etc/ssh/moduli.safe \
         || error_print "${FUNCNAME[idx]}" 
-    #mv -f /etc/ssh/moduli.safe /etc/ssh/moduli 2>/dev/null \
     sudo mv -f /etc/ssh/moduli.safe /etc/ssh/moduli \
         || error_print "${FUNCNAME[idx]}" 
 }
 
 setup_harden_ssh_conf() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Hardening SSH..." "${default}"
-    #echo -e "\n# Restrict key exchange, cipher, and MAC algorithms, as per sshaudit.com\n# hardening guide.\nKexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha256\nCiphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr\nMACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,umac-128-etm@openssh.com\nHostKeyAlgorithms ssh-ed25519,ssh-ed25519-cert-v01@openssh.com,sk-ssh-ed25519@openssh.com,sk-ssh-ed25519-cert-v01@openssh.com,rsa-sha2-256,rsa-sha2-512,rsa-sha2-256-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com" > /etc/ssh/sshd_config.d/ssh-audit_hardening.conf 2> /dev/null \
     sudo echo -e "\n# Restrict key exchange, cipher, and MAC algorithms, as per sshaudit.com\n# hardening guide.\nKexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha256\nCiphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr\nMACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,umac-128-etm@openssh.com\nHostKeyAlgorithms ssh-ed25519,ssh-ed25519-cert-v01@openssh.com,sk-ssh-ed25519@openssh.com,sk-ssh-ed25519-cert-v01@openssh.com,rsa-sha2-256,rsa-sha2-512,rsa-sha2-256-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com" | sudo tee /etc/ssh/sshd_config.d/ssh-audit_hardening.conf \
         || error_print "${FUNCNAME[idx]}" 
 }
@@ -86,51 +90,38 @@ setup_harden_ssh_conf() {
 setup_ssh_conf() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Configuring SSH..." "${default}"
     sudo cp --archive /etc/sshd_config /etc/ssh/sshd_config-COPY-"$(date +'%Y%m%d%H%M%S')"
-    #sed -i 's/#LogLevel INFO/LogLevel VERBOSE/g' /etc/ssh/sshd_config 2>/dev/null \
     sudo sed -i 's/#LogLevel INFO/LogLevel VERBOSE/g' /etc/ssh/sshd_config \
         || error_print "${FUNCNAME[idx]}" 
-    #sed -i 's/#PermitRootLogin prohibit-passowrd/PermitRootLogin no/g' /etc/ssh/sshd_config 2>/dev/null \
     sudo sed -i 's/#PermitRootLogin prohibit-passowrd/PermitRootLogin no/g' /etc/ssh/sshd_config \
         || error_print "${FUNCNAME[idx]}" 
-    #sed -i 's/#MaxAuthTries 6/MaxAuthTries 3/g' /etc/ssh/sshd_config 2>/dev/null \
     sudo sed -i 's/#MaxAuthTries 6/MaxAuthTries 3/g' /etc/ssh/sshd_config \
         || error_print "${FUNCNAME[idx]}" 
-    #sed -i 's/#MaxSessions 10/MaxSessions 2/g' /etc/ssh/sshd_config 2>/dev/null \
     sudo sed -i 's/#MaxSessions 10/MaxSessions 2/g' /etc/ssh/sshd_config \
         || error_print "${FUNCNAME[idx]}" 
-    #sed -i 's/AllowAgentForwarding yes/AllowAgentForwarding no/g' /etc/ssh/sshd_config 2>/dev/null \
     sudo sed -i 's/AllowAgentForwarding yes/AllowAgentForwarding no/g' /etc/ssh/sshd_config \
         || error_print "${FUNCNAME[idx]}" 
-    #sed -i 's/#AllowTcpForwarding yes/AllowTcpForwarding no/g' /etc/ssh/sshd_config 2>/dev/null \
     sudo sed -i 's/#AllowTcpForwarding yes/AllowTcpForwarding no/g' /etc/ssh/sshd_config \
         || error_print "${FUNCNAME[idx]}" 
-    #sed -i 's/X11Forwarding yes/X11Forwarding no/g' /etc/ssh/sshd_config 2>/dev/null \
     sudo sed -i 's/X11Forwarding yes/X11Forwarding no/g' /etc/ssh/sshd_config \
         || error_print "${FUNCNAME[idx]}" 
 }
 
 restart_ssh() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Restarting SSH..." "${default}"
-    #systemctl restart sshd 2>/dev/null \
     sudo systemctl restart sshd \
         || error_print "${FUNCNAME[idx]}" 
 }
 
 setup_fail2ban() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Configuring Fail2ban..." "${default}"
-    #cp /etc/fail2ban/fail2ban.conf /etc/fail2ban/fail2ban.local 2>/dev/null \
     sudo cp /etc/fail2ban/fail2ban.conf /etc/fail2ban/fail2ban.local \
         || error_print "${FUNCNAME[idx]}" 
-    #cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local 2>/dev/null \
     sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local \
         || error_print "${FUNCNAME[idx]}" 
-    #sed -i 's/#ignoreip = 127.0.0.1/8 ::1/ignoreip = 127.0.0.1/8 ::1/g' /etc/fail2ban/jail.local 2>/dev/null \
     sudo sed -i 's/#ignoreip = 127.0.0.1/8 ::1/ignoreip = 127.0.0.1/8 ::1/g' /etc/fail2ban/jail.local \
         || error_print "${FUNCNAME[idx]}" 
-    #sed -i 's/findtime = 10m/findtime = 15m/g' /etc/fail2ban/jail.local 2>/dev/null \
     sudo sed -i 's/findtime = 10m/findtime = 15m/g' /etc/fail2ban/jail.local \
         || error_print "${FUNCNAME[idx]}" 
-    #sed -i 's/maxretry = 5/maxretry = 3/g' /etc/fail2ban/jail.local 2>/dev/null \
     sudo sed -i 's/maxretry = 5/maxretry = 3/g' /etc/fail2ban/jail.local \
         || error_print "${FUNCNAME[idx]}" 
 }
@@ -189,7 +180,7 @@ install_minimal() {
         vifm \
         wget \
         xclip \
-        fonts-hack-ttf \
+        fonts-opendyslexic \
         neofetch \
         fortune \
         dkms \
@@ -202,6 +193,7 @@ install_minimal() {
         amd64-microcode \
         openssh-server \
         openssh-client \
+        python3 \
         iptables-persistent -y
 }
 
@@ -209,8 +201,7 @@ install_base_packages() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Installing Base Packages..." "${default}" \
         && sudo apt install \
         keepassxc \
-        python3 \
-        python3-pip \
+        #python3-pip \
         udiskie \
         gir1.2-gtk-2.0 \
         feh \
@@ -240,7 +231,7 @@ install_GUI() {
         intel-media-va-driver-non-free \
         firmware-amd-graphics \
         r8168-dkms \
-        suckless-tools \
+        #suckless-tools \
         cwm -y
 }
 
@@ -448,6 +439,8 @@ reset2green
 read -p "Would you like to continue running the install script?(Y/n): " -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     printf "\n%s\n%s\n" "Thanks for running the install script" "I tried to have any errors or logs sent to /root/install_error.log"
+    cloning_git \
+        || error_print "cloning_git" && exit 1
 
     reset2green
     read -p "Would you like to change umask to 27?(Y/n): " -n 1 -r
