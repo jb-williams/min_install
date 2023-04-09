@@ -211,6 +211,8 @@ install_base_packages() {
         libxft-dev \
         libharfbuzz-dev \
         libfontconfig1-dev \
+        libxrandr-dev \
+        libxinerama-dev \
         bsdgames \
         bsdgames-nonfree \
         mpd \
@@ -237,7 +239,7 @@ install_GUI() {
 
 setup_slock() {
     if which slock 2>/dev/null; then
-        printf '%s "%s"\n\t%s\t"%s"\t"%s"\n\t%s\t"%s"\t"%s"\n%s\n' "Section" "ServerFlags" "Option" "DontVTSwitch" "True" "Option" "DontZap" "True" "EndSection" || error_print "${FUNCNAME[idx]}" 
+        printf '%s "%s"\n\t%s\t"%s"\t"%s"\n\t%s\t"%s"\t"%s"\n%s\n' "Section" "ServerFlags" "Option" "DontVTSwitch" "True" "Option" "DontZap" "True" "EndSection" >> /etc/X11/xorg.conf || error_print "${FUNCNAME[idx]}" 
     elif ! which slock 2>/dev/null; then
         sudo apt install suckless-tools || error_print "${FUNCNAME[idx]}" 
         setup_slock || error_print "${FUNCNAME[idx]}" 
