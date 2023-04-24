@@ -592,6 +592,6 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     printf "\n%s\n%s\n" "Thanks for running the install script" "I tried to have any errors or logs sent to /root/install_error.log"
     printf "%b" "${default}"
 else
-    exit
+j    exit
 fi
 
