@@ -25,8 +25,8 @@ vim.g.netrw_winsize=50
 --vim.g.netrw_brows_split=1
 
 -- search
-vim.opt.incsearch=true
 vim.opt.hlsearch=true
+vim.opt.incsearch=true
 vim.opt.showmatch=true
 vim.opt.ignorecase=true
 vim.opt.smartcase=true

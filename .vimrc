@@ -1,16 +1,21 @@
 filetype plugin on 
+"vim.opt.filetype=on
 "" doesnt work on nvim
 "set noesckeys
 "" Make backspace a bit nicer
 set backspace=eol,start,indent
+"vim.opt.backspace="eol","start","indent"
 
 """""""""""""""""""""""""""""""""""
 """"""""HISTORY / SEARCHING""""""""
 """""""""""""""""""""""""""""""""""
 "" History
 set history=50
+"vim.opt.history=50
 set t_Co=256
+"vim.opt.t_Co=256
 set smartindent
+"vim.opt.smartindent
 set noswapfile
 set nobackup
 set cursorline
@@ -64,12 +69,18 @@ set tabstop=4
 set softtabstop=4
 set shiftround
 set expandtab
+"" Disable mouse=     enable set mouse=a
+set mouse=a
+"set sidescrolloff=999
+"set scrolloff=999
 
-""""""""""""""""""""""""""""""
-""""""""SYNTAX / SPELL""""""""
-""""""""""""""""""""""""""""""
-"" auto correct 'teh' to 'the'
-ab teh the
+set ls=2
+set showmode
+set showcmd
+set modeline
+set ruler
+set title
+set nu rnu
 
 """""""""""""""""""""""""""""""""""""""""
 """"""""DISPLAY / WINDOWS / COLOR""""""""
@@ -92,18 +103,12 @@ function! ToggleBG()
     endif
 endfunction
 
-"" Disable mouse=     enable set mouse=a
-set mouse=a
-"set sidescrolloff=999
-"set scrolloff=999
-
-set ls=2
-set showmode
-set showcmd
-set modeline
-set ruler
-set title
-set nu rnu
+""""""""""""""""""""""""""""""
+""""""""SYNTAX / SPELL""""""""
+""""""""""""""""""""""""""""""
+"" auto correct 'teh' to 'the'
+ab teh the
+ab ehlp help
 
 """""""""""""""""""""""""""
 """"""""LEADER KEYS""""""""

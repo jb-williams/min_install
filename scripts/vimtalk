@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-VIMENV=talk /usr/bin/nvim -p "$@"

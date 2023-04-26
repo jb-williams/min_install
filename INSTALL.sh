@@ -77,7 +77,7 @@ setup_ssh_moduli() {
         || error_print "${FUNCNAME[idx]}" 
     sudo awk '$5 >= 3071' /etc/ssh/moduli | sudo tee /etc/ssh/moduli.safe \
         || error_print "${FUNCNAME[idx]}" 
-    sudo mv -f /etc/ssh/moduli.safe /etc/ssh/moduli \
+    sudo sh -c "mv -f /etc/ssh/moduli.safe /etc/ssh/moduli" \
         || error_print "${FUNCNAME[idx]}" 
 }
 
@@ -143,9 +143,9 @@ recheck_updates_cleanup() {
         && sudo apt full-upgrade \
         && sudo apt-get autoremove --purge -y \
         && sudo apt clean -y \
-        && sudo rm -rf /tmp/* \
-        && sudo rm -rf /var/tmp/* \
-        && sudo rm -rf /root/.cache/thumbnails
+        && sudo sh -c "rm -rf /tmp/*" \
+        && sudo sh -c "rm -rf /var/tmp/*" \
+        && sudo sh -c "rm -rf /root/.cache/thumbnails"
 }
 
 install_minimal() {
@@ -201,7 +201,6 @@ install_base_packages() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Installing Base Packages..." "${default}" \
         && sudo apt install \
         keepassxc \
-        #python3-pip \
         udiskie \
         gir1.2-gtk-2.0 \
         feh \
@@ -233,7 +232,6 @@ install_GUI() {
         intel-media-va-driver-non-free \
         firmware-amd-graphics \
         r8168-dkms \
-        #suckless-tools \
         cwm -y
 }
 
@@ -256,11 +254,11 @@ install_golang() {
         wget https://go.dev/dl/"$VERSION"
         tar xvfz "$VERSION"
         if [[ -d /usr/local/go ]]; then
-            sudo rm -rfi /usr/local/go
-            sudo mv -i go /usr/local/
+            sudo sh -c "rm -rf /usr/local/go"
+            sudo sh -c "mv go /usr/local/"
             rm "$VERSION"
         else 
-            sudo mv -i go /usr/local/
+            sudo sh -c "mv -i go /usr/local/"
         fi
         popd || error_print "${FUNCNAME[idx]}" 
     fi
@@ -276,7 +274,7 @@ install_rust() {
     fi
     read -p "Would you like to install my basic rust programs?(Y/n): " -n 1 -r
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        cargo install bat exa \
+        cargo install cargo-install-update bat exa fd-find ripgrep \
             || error_print "install_basic_rust"
     fi
     read -p "Would you like to install Alacritty terminal?(Requires certain packages)(Y/n): " -n 1 -r
@@ -292,7 +290,7 @@ install_rust() {
             && sudo cp extra/logo/alacritty-term+scanlines.svg \
             && sudo desktop-file-install extra/linux/Alacritty.desktop \
             && sudo update-desktop-database \
-            && sudo mkdir -p /usr/local/share/man/man1 \
+            && sudo sh -c "mkdir -p /usr/local/share/man/man1" \
             && gzip -c extra/alacritty.man | sudo tee /usr/local/share/man/man1/alacritty.1.gz > /dev/null \
             && gzip -c extra/alacritty-msg.man | sudo tee /usr/local/share/man/man1/alacritty-msg.1.gz > /dev/null
         popd || error_print "${FUNCNAME[idx]}" 
@@ -423,14 +421,11 @@ setup_userDots() {
         linkDotfile .localrc
         linkDotfile .profile
         linkDotfile .tmux.conf
-        linkDotfile .vimrc
         linkDotfile .Xresources
         linkDotfile .xsession
         linkDotfile scripts
 
         source "$HOME"/.bashrc 2>/dev/null
-        source "$HOME"/.vimrc 2>/dev/null
-
 }
 ###########################################
 ####### MAIN RUNNING PART OF SCRIPT #######
@@ -592,6 +587,6 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     printf "\n%s\n%s\n" "Thanks for running the install script" "I tried to have any errors or logs sent to /root/install_error.log"
     printf "%b" "${default}"
 else
-j    exit
+    exit
 fi
 
