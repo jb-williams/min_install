@@ -194,6 +194,8 @@ install_minimal() {
         openssh-server \
         openssh-client \
         python3 \
+        usbguard \
+        usbguard-notifier \
         iptables-persistent -y
 }
 
