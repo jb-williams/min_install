@@ -353,7 +353,7 @@ EOF
 
 install_LibreWolfUnstable() {
     if ! which librewolf; then
-        ! [ -d /etc/apt/keyrings ] && sudo mkdir -p /etc/apt/keyrings && sudo chmod 755 /etc/apt/keyrings
+        ! [ -d /etc/apt/keyrings ] && sudo sh -c "mkdir -p /etc/apt/keyrings" && sudo sh -c "chmod 755 /etc/apt/keyrings"
         wget -O- https://download.opensuse.org/repositories/home:/bgstack15:/aftermozilla/Debian_Unstable/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/home_bgstack15_aftermozilla.gpg
         sudo tee /etc/apt/sources.list.d/home_bgstack15_aftermozilla.sources << EOF > /dev/null
 Types: deb
@@ -512,6 +512,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
         fi
 
         reset2green
+        printf "%b%s%b LibreWolf is downgraded for Debian Testing at the momment\n" "${blink}${red}" "WARNING" "${green}"
         read -p "Would you like to install Librewolf?(Y/n): " -n 1 -r
         if [[ $REPLY =~ ^[Yy]$ ]]; then
             read -p "Would you like to install Stable?(Y/n): " -n 1 -r
