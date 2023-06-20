@@ -8,6 +8,6 @@ git clone https://github.com/jb-williams/min_install.git && cd $_ && chmod +x IN
 ```
 this doesnt work yet
 ```
-curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/jb-williams/min_install/main/INSTALL.sh | sh
+curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/jb-williams/min_install/main/INSTALL.sh | bash
 ```
 
