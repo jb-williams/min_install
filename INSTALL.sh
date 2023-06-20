@@ -32,7 +32,7 @@ reset2green() {
 }
 
 error_print() {
-    printf "%b%b%b%s%b%b %s %b%s%b%s\n" "${bold}" "${blink}" "${red}" "ERROR!!!" "${default}" "${green}" "Failed:" "${lightyellow}" "$*" "${green}" "!!!" | tee -a /root/install_error.log
+    printf "%b%b%b%s%b%b %s %b%s%b%s\n" "${bold}" "${blink}" "${red}" "ERROR!!!" "${default}" "${green}" "Failed:" "${lightyellow}" "$*" "${green}" "!!!" | tee -a "$HOME"/install_error.log
 }
 
 change_umask() { printf "\n%b%b%s%b\n" "${default}" "${green}" "Setting Umask...." "${default}"
@@ -570,11 +570,11 @@ read -p "Would you like to continue running the install script?(Y/n): " -n 1 -r
 
         mkdir -p "$HOME"/{Desktop,Downloads,Documents,deb,Gits,go/src,Pictures,Music,Video}
         if [[ -d "${HOME}"/Gits ]]; then
-            install_userDots \
+            setup_userDots \
                 || error_print "setup_userDots" 
         else
             mkdir -p "$HOME"/Gits
-            install_userDots \
+            setup_userDots \
                 || error_print "setup_userDots" 
 
         fi
