@@ -436,8 +436,7 @@ printf "\n%b%b%s%b%b%s\n%s\n" "${bold}" "${lightyellow}" "!! Run at Own Risk !!"
 
 reset2green
 read -p "Would you like to continue running the install script?(Y/n): " -n 1 -r
-if [[ $REPLY =~ ^[Yy]$ ]]; 
-then
+if [[ $REPLY =~ ^[Yy]$ ]]; then
     printf "\n%s\n%s\n" "Thanks for running the install script" "I tried to have any errors or logs sent to /root/install_error.log"
     cloning_git \
         || error_print "cloning_git" && exit 1
