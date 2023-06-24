@@ -30,7 +30,6 @@ install_base_packages() {
         libxrandr-dev \
         libxinerama-dev \
         bsdgames \
-        bsdgames-nonfree \
         mpd \
         mpc \
         sox \

@@ -21,10 +21,7 @@ install_GUI() {
         gnome-themes-extra \
         dzen2 \
         sxiv \
-        i965-va-driver-shaders \
-        intel-media-va-driver-non-free \
         firmware-amd-graphics \
-        r8168-dkms \
         cwm -y
 }
 

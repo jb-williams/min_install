@@ -25,12 +25,12 @@ error_print() {
 cloning_git() {
     printf "%b%s%b\n" "${default}${green}" "Cloning repo into ~/Gits/min_install....." "${default}"
     if [[ ! -d "$HOME/Gits" ]]; then
-        mkdir -p "$HOME/Gits"; cd "$_" || error_print "Error Making/Moving to Git Dir" && exit 1
+        mkdir -p "$HOME/Gits"; cd "$_" || error_print "Error Making/Moving to Git Dir"
         git clone https://github.com/jb-williams/min_install.git
-        cd "$_" || error_print "Error Cloning/Moving to Repo Dir" && exit 1
+        cd min_install || error_print "Error Cloning/Moving to Repo Dir"
     else
         git clone https://github.com/jb-williams/min_install.git
-        cd "$_" || error_print "Error Cloning/Moving to Repo Dir" && exit 1
+        cd min_install || error_print "Error Cloning/Moving to Repo Dir"
     fi
     return
 }
@@ -215,7 +215,6 @@ install_base_packages() {
         libxrandr-dev \
         libxinerama-dev \
         bsdgames \
-        bsdgames-nonfree \
         mpd \
         mpc \
         sox \
@@ -230,10 +229,7 @@ install_GUI() {
         gnome-themes-extra \
         dzen2 \
         sxiv \
-        i965-va-driver-shaders \
-        intel-media-va-driver-non-free \
         firmware-amd-graphics \
-        r8168-dkms \
         cwm -y
 }
 
@@ -439,7 +435,7 @@ read -p "Would you like to continue running the install script?(Y/n): " -n 1 -r
 	if [[ $REPLY =~ ^[Yy]$ ]]; then
 	printf "\n%s\n%s\n" "Thanks for running the install script" "I tried to have any errors or logs sent to /root/install_error.log"
     cloning_git \
-        || error_print "cloning_git" && exit 1
+        || error_print "cloning_git"
 
     reset2green
     read -p "Would you like to change umask to 27?(Y/n): " -n 1 -r
