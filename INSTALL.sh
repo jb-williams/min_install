@@ -14,6 +14,14 @@ blink='\e[5m'
 default='\e[0;39m'
 green='\e[32m'
 
+reset2green() {
+    printf "%b%b" "\e[0;39m" "\e[32m"
+}
+
+error_print() {
+    printf "%b%b%b%s%b%b %s %b%s%b%s\n" "${bold}" "${blink}" "${red}" "ERROR!!!" "${default}" "${green}" "Failed:" "${lightyellow}" "$*" "${green}" "!!!" | tee -a "$HOME"/install_error.log
+}
+
 cloning_git() {
     printf "%b%s%b\n" "${default}${green}" "Cloning repo into ~/Gits/min_install....." "${default}"
     if [[ ! -d "$HOME/Gits" ]]; then
@@ -25,14 +33,6 @@ cloning_git() {
         cd "$_" || error_print "Error Cloning/Moving to Repo Dir" && exit 1
     fi
     return
-}
-
-reset2green() {
-    printf "%b%b" "\e[0;39m" "\e[32m"
-}
-
-error_print() {
-    printf "%b%b%b%s%b%b %s %b%s%b%s\n" "${bold}" "${blink}" "${red}" "ERROR!!!" "${default}" "${green}" "Failed:" "${lightyellow}" "$*" "${green}" "!!!" | tee -a "$HOME"/install_error.log
 }
 
 change_umask() { printf "\n%b%b%s%b\n" "${default}" "${green}" "Setting Umask...." "${default}"
@@ -380,8 +380,8 @@ install_BraveBrowser() {
     fi
 }
 
-setup_userDots() {
     
+setup_userDots() {
         pushd "${HOME}"/Gits || error_print "${FUNCNAME[idx]}" 
         dotfilesDir="${HOME}/Gits/min_install"
 
@@ -416,7 +416,7 @@ setup_userDots() {
         linkDotfile .ctags
         linkDotfile .curlrc
         linkDotfile .cwmrc
-        linkDotfile .dmrc
+        #linkDotfile .dmrc
         linkDotfile .exrc
         linkDotfile .inputrc
         linkDotfile .kshrc
