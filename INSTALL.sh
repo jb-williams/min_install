@@ -473,26 +473,26 @@ read -p "Would you like to continue running the install script?(Y/n): " -n 1 -r
         || error_print "update_apt" 
     install_minimal \
         || error_print "install_minimal" 
-    setup_ssh_moduli \
-        || error_print "setup_ssh_moduli" 
-    setup_harden_ssh_conf \
-        || error_print "setup_harden_ssh_conf" 
-    setup_ssh_conf \
-        || error_print "setup_ssh_conf" 
-    restart_ssh \
-        || error_print "restart_ssh" 
-    setup_logrotate \
-        || error_print "setup_logrotate" 
-    setup_fail2ban \
-        || error_print "setup_fail2ban" 
-    #setup_sendmail \
-        #|| error_print "${FUNCNAME[idx]}" 
 
     reset2green
     read -p "Would you like to install basic packages?(Y/n): " -n 1 -r
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         install_base_packages \
             || error_print "install_base_packages" 
+		setup_ssh_moduli \
+			|| error_print "setup_ssh_moduli" 
+		setup_harden_ssh_conf \
+			|| error_print "setup_harden_ssh_conf" 
+		setup_ssh_conf \
+			|| error_print "setup_ssh_conf" 
+		restart_ssh \
+			|| error_print "restart_ssh" 
+		setup_logrotate \
+			|| error_print "setup_logrotate" 
+		setup_fail2ban \
+			|| error_print "setup_fail2ban" 
+		#setup_sendmail \
+			#|| error_print "${FUNCNAME[idx]}" 
     fi
 
     reset2green
@@ -588,4 +588,3 @@ read -p "Would you like to continue running the install script?(Y/n): " -n 1 -r
 else
     exit
 fi
-
