@@ -11,13 +11,12 @@ reset2green() {
 }
 
 error_print() {
-    printf "%b%b%b%s%b%b %s %b%s%b%s\n" "${bold}" "${blink}" "${red}" "ERROR!!!" "${default}" "${green}" "Failed:" "${lightyellow}" "$*" "${green}" "!!!" | tee -a "$HOME"/install_error.log
+    printf "%b%b%b%s%b%b %s %b%s%b%s\n" "${bold}" "${blink}" "${red}" "ERROR!!!" "${default}" "${green}" "Failed:" "${lightyellow}" "$*" "${green}" "!!!" | tee -a "$HOME"/install-rust-error.log
 }
 
 install_rust() {
     if ! which cargo &> /dev/null; then
         /usr/bin/curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-        source "$HOME/.cargo/env" 2>/dev/null
         source "$HOME/.bashrc" 2>/dev/null
     else
         printf "Rust is Already Installed..."

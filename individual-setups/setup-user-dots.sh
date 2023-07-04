@@ -11,11 +11,15 @@ reset2green() {
 }
 
 error_print() {
-    printf "%b%b%b%s%b%b %s %b%s%b%s\n" "${bold}" "${blink}" "${red}" "ERROR!!!" "${default}" "${green}" "Failed:" "${lightyellow}" "$*" "${green}" "!!!" | tee -a "$HOME"/install_error.log
+    printf "%b%b%b%s%b%b %s %b%s%b%s\n" "${bold}" "${blink}" "${red}" "ERROR!!!" "${default}" "${green}" "Failed:" "${lightyellow}" "$*" "${green}" "!!!" | tee -a "$HOME"/install-user-dots-error.log
 }
 
 setup_userDots() {
-        pushd "${HOME}"/Gits || error_print "${FUNCNAME[idx]}" 
+		if [ ! -d "${HOME}"/Gits ]; then
+			mkdir -p "${HOME}"/Gits
+		else
+			pushd "${HOME}"/Gits || error_print "${FUNCNAME[idx]}" 
+		fi
         dotfilesDir="${HOME}/Gits/min_install"
 
         linkDotfile() {
@@ -60,7 +64,7 @@ setup_userDots() {
         linkDotfile .xsession || error_print ".xsession"
         linkDotfile scripts || error_print "scripts"
 
-        source "$HOME"/.bashrc 2>/dev/null
+        source "$HOME"/.bashrc
 }
 
 reset2green

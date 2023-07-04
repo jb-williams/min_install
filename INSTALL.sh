@@ -19,13 +19,13 @@ reset2green() {
 }
 
 error_print() {
-    printf "%b%b%b%s%b%b %s %b%s%b%s\n" "${bold}" "${blink}" "${red}" "ERROR!!!" "${default}" "${green}" "Failed:" "${lightyellow}" "$*" "${green}" "!!!" | tee -a "$HOME"/install_error.log
+    printf "%b%b%b%s%b%b %s %b%s%b%s\n" "${bold}" "${blink}" "${red}" "ERROR!!!" "${default}" "${green}" "Failed:" "${lightyellow}" "$*" "${green}" "!!!" | tee -a "$HOME"/install-script-error.log
 }
 
 cloning_git() {
     printf "%b%s%b\n" "${default}${green}" "Cloning repo into ~/Gits/min_install....." "${default}"
-    if [[ ! -d "$HOME/Gits" ]]; then
-        mkdir -p "$HOME/Gits"; cd "$_" || error_print "Error Making/Moving to Git Dir"
+    if [[ ! -d "$HOME"/Gits ]]; then
+        mkdir -p "$HOME"/Gits; cd "$_" || error_print "Error Making/Moving to Git Dir"
         git clone https://github.com/jb-williams/min_install.git
         cd min_install || error_print "Error Cloning/Moving to Repo Dir"
     else
@@ -54,7 +54,7 @@ add_non_free() {
 
 change_testing() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Changing sources to Testing..." "${default}"
-    sudo sed -i 's/bullseye/testing/g' /etc/apt/sources.list \
+    sudo sed -i 's/bookworm/testing/g' /etc/apt/sources.list \
         || error_print "${FUNCNAME[idx]}" 
 }
 

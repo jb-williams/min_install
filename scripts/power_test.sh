@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+### doesn't quite work properly yet, think i need to implement xautolock
 SLEEP_SEC=30
 basedir="/proc/acpi/button/lid/"
 

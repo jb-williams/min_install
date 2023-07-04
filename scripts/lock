@@ -17,7 +17,7 @@ case $Option in
 		/usr/bin/systemctl suspend
 		;;
 	Reboot)
-		/usr/bin/doas /sbin/reboot
+		/usr/bin/sudo /sbin/reboot
 		;;
 	Shutdown)
 		/usr/bin/sudo /sbin/shutdown -h now

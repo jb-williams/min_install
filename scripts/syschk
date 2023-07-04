@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
 
-clear
-printf "Mem: \n%s\n\nDisk: \n%s\n\nUptime: \n%s\n" "$(/usr/bin/free -h)", "$(/usr/bin/df -h /dev/* | /usr/bin/grep -iE 'nvme|mapper|sd*' |/usr/bin/grep -vE 'pts|fs' 2>/dev/null)", "$(/usr/bin/uptime)" | fzf --prompt="Search for Program to Run : " --border=rounded --margin=5% --color=dark --height 100% --reverse --header="                    PROGRAMS " --info=hidden --header-first 
+#clear
+#printf "Mem: \n%s\n\nDisk: \n%s\n\nUptime: \n%s\n" "$(/usr/bin/free -h)", "$(/usr/bin/df -h /dev/* | /usr/bin/grep -iE 'nvme|mapper|sd[a-z]{1}' |/usr/bin/grep -vE 'pts|fs' 2>/dev/null)", "$(/usr/bin/uptime)"
+
+# if you want to run almost as a follow
+while :; do
+	clear
+	printf "Mem: \n%s\n\nDisk: \n%s\n\nUptime: \n%s\n" "$(/usr/bin/free -h)", "$(/usr/bin/df -h /dev/* | /usr/bin/grep -iE 'nvme|mapper|sd[a-z]{1}' |/usr/bin/grep -vE 'pts|fs' 2>/dev/null)", "$(/usr/bin/uptime)"
+	sleep 2
+done

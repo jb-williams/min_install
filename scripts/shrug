@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+## just to quickly get that shrug in
 set -eo pipefail
 
 /usr/bin/echo -n "¯\_(ツ)_/¯" | /usr/bin/xclip -selection c

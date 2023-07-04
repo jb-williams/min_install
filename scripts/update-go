@@ -2,20 +2,20 @@
 
 ## dirty way of updating golang
 VERSION="$(curl https://go.dev/dl/ | grep -iE '<span>go[0-9].[0-9]{2}.[0-9]{1,2}.linux-amd64.tar.gz' | sed -e 's/<[^>]*.//g' | tr -d ' ')"
-echo "Your go version is "$(go version 2>/dev/null)""
-read -p "Curl read Current Go Version as "$VERSION" : Would you like to Continue?(Y/n): " -n 1 -r
+echo "Your go version is $(go version 2>/dev/null)"
+read -p "Curl read Current Go Version as $VERSION : Would you like to Continue?(Y/n): " -n 1 -r
 if [[ "$REPLY" =~ ^[Yy]$ ]]; then
-    pushd /tmp
+    pushd /tmp || return
     wget https://go.dev/dl/"$VERSION"
     tar xvfz "$VERSION"
     if [[ -d /usr/local/go ]]; then
-        sudo rm -rfi /usr/local/go
-        sudo mv -i go /usr/local/
+        sudo rm -rf /usr/local/go
+        sudo mv go /usr/local/
         rm "$VERSION"
     else 
-        sudo mv -i go /usr/local/
+        sudo mv go /usr/local/
     fi
-    popd
+    popd || return
 else
     exit
 fi

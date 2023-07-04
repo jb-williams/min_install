@@ -11,7 +11,7 @@ reset2green() {
 }
 
 error_print() {
-    printf "%b%b%b%s%b%b %s %b%s%b%s\n" "${bold}" "${blink}" "${red}" "ERROR!!!" "${default}" "${green}" "Failed:" "${lightyellow}" "$*" "${green}" "!!!" | tee -a "$HOME"/install_error.log
+    printf "%b%b%b%s%b%b %s %b%s%b%s\n" "${bold}" "${blink}" "${red}" "ERROR!!!" "${default}" "${green}" "Failed:" "${lightyellow}" "$*" "${green}" "!!!" | tee -a "$HOME"/install-golang-error.log
 }
 
 install_golang() {
@@ -26,7 +26,7 @@ install_golang() {
             sudo sh -c "mv go /usr/local/"
             rm "$VERSION"
         else 
-            sudo sh -c "mv -i go /usr/local/"
+            sudo sh -c "mv go /usr/local/"
         fi
         popd || error_print "${FUNCNAME[idx]}" 
     fi
