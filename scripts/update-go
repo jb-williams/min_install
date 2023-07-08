@@ -5,7 +5,7 @@ VERSION="$(curl https://go.dev/dl/ | grep -iE '<span>go[0-9].[0-9]{2}.[0-9]{1,2}
 echo "Your go version is $(go version 2>/dev/null)"
 read -p "Curl read Current Go Version as $VERSION : Would you like to Continue?(Y/n): " -n 1 -r
 if [[ "$REPLY" =~ ^[Yy]$ ]]; then
-    pushd /tmp || return
+    pushd /tmp || exit
     wget https://go.dev/dl/"$VERSION"
     tar xvfz "$VERSION"
     if [[ -d /usr/local/go ]]; then
