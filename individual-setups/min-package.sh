@@ -56,13 +56,13 @@ install_minimal() {
         iucode-tool \
         lynx \
         firmware-misc-nonfree \
-        amd64-microcode \
         openssh-server \
         openssh-client \
         python3 \
         usbguard \
         usbguard-notifier \
         iptables-persistent -y
+        #amd64-microcode \
 }
 
 reset2green

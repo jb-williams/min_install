@@ -21,8 +21,8 @@ install_GUI() {
         gnome-themes-extra \
         dzen2 \
         sxiv \
-        firmware-amd-graphics \
         cwm -y
+        #firmware-amd-graphics \
 }
 
 reset2green

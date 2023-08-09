@@ -18,7 +18,6 @@ install_base_packages() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Installing Base Packages..." "${default}" \
         && sudo apt install \
         keepassxc \
-        udiskie \
         gir1.2-gtk-2.0 \
         feh \
         galculator \
@@ -35,6 +34,7 @@ install_base_packages() {
         sox \
         libsox-fmt-mp3 \
         cmus -y
+        #udiskie \
 }
 
 reset2green

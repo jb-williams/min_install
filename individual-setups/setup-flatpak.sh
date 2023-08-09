@@ -18,7 +18,7 @@ reset2green
 read -p "Would you like to install flatpak?(Y/n): " -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
 	sudo apt install flatpak gnome-software-plugin-flatpak || error_print "failed apt install" 
-	flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo || error_print "failed flatpak repo add" 
+	flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo || error_print "failed flatpak repo add" 
 	printf "%s!\n" "A list of possible flatpaks to install and used are in flatpaks.md"
 fi
 

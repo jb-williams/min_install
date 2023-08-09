@@ -22,7 +22,7 @@ backup_sources() {
 
 add_non_free() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Adding Non-Free Repos..." "${default}"
-    sudo sed -i 's/main contrib/main contrib non-free/g' /etc/apt/sources.list \
+    sudo sed -i 's/main non-free-firmware/main non-free-firmware contrib/g' /etc/apt/sources.list \
         || error_print "${FUNCNAME[idx]}" 
 }
 
@@ -59,13 +59,13 @@ recheck_updates_cleanup() {
 reset2green
 backup_sources || error_print "backup_sources"
 reset2green
-add_non_free || error_print "add_non_free"
-reset2green
+#add_non_free || error_print "add_non_free"
+#reset2green
 change_testing || error_print "change_testing"
 reset2green
-add_i386 || error_print || error_print "add_i386"
+add_i386 || error_print "add_i386"
 reset2green
 update_apt || error_print "update_apt"
 reset2green
-recheck_updates_cleanup || error_print "recheck_updates_cleanup"
+#recheck_updates_cleanup || error_print "recheck_updates_cleanup"
 
