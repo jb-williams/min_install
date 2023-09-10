@@ -47,7 +47,7 @@ setup_userDots() {
         }
 
         linkDotfile .ackrc || error_print "ackrc"
-        linkDotfile .aliases || error_print "aliases"
+        linkDotfile .bash_aliases || error_print "aliases"
         linkDotfile .bash_profile || error_print "bash_profile"
         linkDotfile .bashrc || error_print "bashrc"
         linkDotfile .ctags || error_print "ctags"
