@@ -17,10 +17,8 @@ error_print() {
 install_base_packages() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Installing Base Packages..." "${default}" \
         && sudo apt install \
-        keepassxc \
-        gir1.2-gtk-2.0 \
         feh \
-        galculator \
+		ffmpeg \
         libx11-dev \
         libxcb1-dev \
         libxft-dev \
@@ -29,12 +27,20 @@ install_base_packages() {
         libxrandr-dev \
         libxinerama-dev \
         bsdgames \
+        bsdgames-nonfree \
+		taskwarrior \
+		python3 \
+		python3-neovim \
+		python3-pynvim \
+		python3-tasklib \
         mpd \
         mpc \
         sox \
         libsox-fmt-mp3 \
         cmus -y
         #udiskie \
+        #gir1.2-gtk-2.0 \
+        #gir1.2-gtk-3.0 \
 }
 
 reset2green

@@ -33,14 +33,12 @@ install_minimal() {
         htop \
         iptables \
         rkhunter \
-        strace \
         tmux \
         libpam-tmpdir \
         logrotate \
         lynis \
         needrestart \
         neovim \
-        net-tools \
         nmap \
         pkg-config \
         vifm \
@@ -54,14 +52,16 @@ install_minimal() {
         pass \
         intel-microcode \
         iucode-tool \
-        lynx \
         firmware-misc-nonfree \
-        openssh-server \
-        openssh-client \
         python3 \
         usbguard \
         usbguard-notifier \
         iptables-persistent -y
+        #lynx \
+        #net-tools \
+        #openssh-server \
+        #openssh-client \
+        #strace \
         #amd64-microcode \
 }
 

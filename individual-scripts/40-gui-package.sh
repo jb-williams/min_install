@@ -17,12 +17,18 @@ error_print() {
 install_GUI() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Installing Base Packages..." "${default}" \
         && sudo apt install \
+        keepassxc \
         tango-icon-theme \
         gnome-themes-extra \
         dzen2 \
         sxiv \
+		redshift-gtk \
+		bpytop \
         cwm -y
-        #firmware-amd-graphics \
+        # ? i965-va-driver-shaders \
+        # ? intel-media-va-driver-non-free \
+        # ? r8168-dkms \
+        # ? firmware-amd-graphics \
 }
 
 reset2green

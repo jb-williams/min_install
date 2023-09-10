@@ -6,6 +6,8 @@ blink='\e[5m'
 default='\e[0;39m'
 green='\e[32m'
 
+##### Might need to check permissions of /usr/share/keyrings or something
+
 reset2green() {
     printf "%b%b" "\e[0;39m" "\e[32m"
 }

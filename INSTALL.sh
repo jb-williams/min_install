@@ -48,7 +48,7 @@ backup_sources() {
 
 add_non_free() {
     printf "\n%b%b%s%b\n" "${default}" "${green}" "Adding Non-Free Repos..." "${default}"
-    sudo sed -i 's/main contrib/main contrib non-free/g' /etc/apt/sources.list \
+    sudo sed -i 's/main contrib/main contrib non-free-firmware/g' /etc/apt/sources.list \
         || error_print "${FUNCNAME[idx]}" 
 }
 
