@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+pushd "${HOME}"/Gits/alacritty \
+    && /usr/bin/git pull \
+    && ~/.cargo/bin/cargo build --release --no-default-features --features=x11 \
+    && /usr/bin/sudo cp target/release/alacritty /usr/local/bin/ \
+	&& /usr/bin/sudo chmod u=rwx,g=rx,o=rx /usr/local/bin/alacritty \
+    && sudo update-desktop-database
+popd || exit
+
+    #&& sudo mkdir -p /usr/local/share/man/man1 \
+    #&& gzip -c extra/alacritty.man | sudo tee /usr/local/share/man/man1/alacritty.1.gz > /dev/null \
+    #&& gzip -c extra/alacritty-msg.man | sudo tee /usr/local/share/man/man1/alacritty-msg.1.gz > /dev/null
+    #&& sudo cp extra/logo/alacritty-term+scanlines.svg \
+    #&& sudo desktop-file-install extra/linux/Alacritty.desktop \

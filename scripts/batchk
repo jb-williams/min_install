@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -eou pipefail
+batcheck="$(battery)"
+/usr/bin/echo "$batcheck"
+/usr/bin/notify-send -t 3500 "$batcheck"
+

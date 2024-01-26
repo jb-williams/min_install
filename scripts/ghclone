@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+gitPath="$HOME/Gits"
+repoUrl="$1"
+repoName="$(/usr/bin/echo \""$repoUrl"\" | awk -F"/" '{print $NF}' | cut -d "." -f 1)"
+if [ ! -d "$gitPath" ]; then
+	mkdir -p "$gitPath"
+fi
+if [ -z "$repoUrl" ]; then
+    printf "\n\tusage: ghclone <cloneurl>\n" && exit 1
+fi
+if [ -z "$repoName" ]; then
+	printf "\n\tunable to get data: \"%s\"\n" "$repoName" && exit 1
+fi
+if [ -d "$gitPath/$repoName" ]; then
+	printf "\n\tRepo \"%s\" already exists in \"%s\"\n" "$repoName" "$gitPath" && exit 1
+fi
+printf "gitPath: %s\nrepoUrl: %s\nrepoName: %s\n" "$gitPath" "$repoUrl" "$repoName"
+pushd "$gitPath" || exit 1
+git clone "$repoUrl" || exit 1
+popd || exit 1

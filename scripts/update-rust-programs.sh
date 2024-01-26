@@ -1,3 +1,2 @@
 #!/usr/bin/env bash
-
-cargo install-update -a
+"$HOME"/.cargo/bin/cargo install-update -a

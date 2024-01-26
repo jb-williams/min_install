@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# hacked together way of switching between github gitlab
+# stop script if any step fails
+set -eou pipefail
+action="$1"
+repo="$2"
+
+pushd "$repo"
+if [ -z "$repo" ]; then
+    /usr/bin/figlet "ERROR!!"
+    printf "ERROR: Please include repo name followed by filename or \* \(glob\) for entire dir.\n"
+  exit 1
+fi
+
+if [[ $action == "push" ]]; then
+    /usr/bin/git status;
+    read -p "Would you like to push changes?: " -n 1 -r
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+            /usr/bin/git add .
+        elif [[ $REPLY =~ ^[Nn]$ ]]; then
+            printf "\nNo Changes Pushed"
+            sleep 0.5
+            exit
+        fi
+
+    printf "\nCreate Comment: "
+    read -r message
+
+        /usr/bin/git commit -m "$message"
+        /usr/bin/git push
+        
+    /usr/bin/figlet "PUSH COMPLETE!!"
+    popd
+    sleep 0.5
+    exit
+elif [[ $action == "pull" ]]; then
+    /usr/bin/git pull --rebase
+    /usr/bin/figlet "PULL COMPLETE!!"
+    popd
+    sleep 0.5
+    exit
+elif [[ $action == "check" ]]; then
+    /usr/bin/git remote update && git status -uno
+    exit
+else
+    /usr/bin/figlet "ERROR!!"
+    printf "ERROR! Usage:  gitxf [push or pull or check] [repo_name]\n"
+    popd
+    sleep 0.5
+    exit 1
+fi
+

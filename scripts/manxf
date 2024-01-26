@@ -1,38 +1,48 @@
 #!/usr/bin/env bash
-if ! pidof tmux &>/dev/null; then
-    tmux new -s scratch -d \; new -A -s master \; popup -E "$(which man) $1"
-    exit
-    # 1 1 1
-elif ! tmux list-sessions | grep -qi 'master' &>/dev/null && ! tmux list-sessions | grep -qi 'scratch' &>/dev/null && ! tmux list-sessions | grep -qi 'attached' &>/dev/null; then
-    tmux new -s scratch -d \; new -A -s master \; popup -E "$(which man) $1"
-    exit
-    # 1 0 1
-elif ! tmux list-sessions | grep -qi 'master' &>/dev/null && tmux list-sessions | grep -qi 'scratch' &>/dev/null && ! tmux list-sessions | grep -qi 'attached' &>/dev/null; then
-    tmux new -A -s master \; popup -E "$(which man) $1"
-    exit
-    # 1 1 0
-elif ! tmux list-sessions | grep -qi 'master' &>/dev/null && ! tmux list-sessions | grep -qi 'scratch' &>/dev/null && tmux list-sessions | grep -qi 'attached' &>/dev/null; then
-    tmux new -s scratch -d \; new -A -s master \; popup -E "$(which man) $1"
-    exit
-    # 1 0 0
-elif ! tmux list-sessions | grep -qi 'master' &>/dev/null && tmux list-sessions | grep -qi 'scratch' &>/dev/null && tmux list-sessions | grep -qi 'attached' &>/dev/null; then
-    tmux new -s master -d \; popup -E "$(which man) $1"
-    exit
-    # 0 1 1
-elif tmux list-sessions | grep -qi 'master' &>/dev/null && ! tmux list-sessions | grep -qi 'scratch' &>/dev/null && ! tmux list-sessions | grep -qi 'attached' &>/dev/null; then
-    tmux new -s scratch -d \; attach -t master \; popup -E "$(which man) $1"
-    exit
-    # 0 1 0
-elif tmux list-sessions | grep -qi 'master' &>/dev/null && ! tmux list-sessions | grep -qi 'scratch' &>/dev/null && tmux list-sessions | grep -qi 'attached' &>/dev/null; then
-    tmux new -s scratch -d \; popup -E "$(which man) $1"
-    exit
-    # 0 0 1
-elif tmux list-sessions | grep -qi 'master' &>/dev/null && tmux list-sessions | grep -qi 'scratch' &>/dev/null && ! tmux list-sessions | grep -qi 'attached' &>/dev/null; then
-    tmux attach -t master \; popup -E "$(which man) $1"
-    exit
-    # 0 0 0
-elif tmux list-sessions | grep -qi 'master' &>/dev/null && tmux list-sessions | grep -qi 'scratch' &>/dev/null && tmux list-sessions | grep -qi 'attached' &>/dev/null; then
-    tmux popup -E "$(which man) $1"
-    exit
+# check if fzf and apropos are installed, install if not
+requirements=("fzf" "apropos")
+
+for single in "${requirements[@]}"; do
+	if ! command -v "$single" &>/dev/null; then
+		printf "\n\t%s not found\n" "$single"
+	# do you want to install?
+		read -p "Would you like to install?: " -n 1 -r
+		if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+			if command -v apt &>/dev/null; then
+				sudo apt install "$single"
+			elif command -v packman &>/dev/null; then
+				sudp pacman -S "$single"
+			else
+				printf "\n\t\tpackage not found\n\tuse your pkg manager to install %s\n" "$single" && exit 1
+			fi
+		else
+			printf "exiting program" && exit 0
+		fi
+	fi
+done
+
+# get command or keyword/phrase
+read -r -p "query: " query
+[[ "$query" ]] || exit 1
+
+# check if command is a builtin
+if [[ $(type -ta "$query" | head -1) == "builtin" ]]; then
+	tmux neww bash -c "man $(echo "$SHELL" | awk -F'/' '{print $NF}') | \less '+/$query\ \['" || exit 1
+
+# check if there is not a manpage
+elif [[ $(apropos "$query" &>/dev/null;echo "$?") == "16" ]]; then
+	printf "%s\n" "Unable to find man with keyword/phrase or builtin command to lookup." && exit 16
+
+# check if there is manpage
+elif [[ $(apropos "$query" &>/dev/null;echo "$?") == "0" ]]; then
+	selected=$(apropos "$query" | sort -u | fzf --border --margin=5% --color=dark --height=100% --reverse)
+
+# select and open manpage
+	if [[ "$selected" ]]; then
+		tmux neww bash -c "man $(echo -e  "$selected" | tr -d ' ' | awk -F'(' '{print $1"."$2}' | cut -d ')' -f 1)" || exit 1
+	fi
+else
+	printf "%s\n" "Unable to complete request for some reason" && exit 1
 fi
-exit
+exit 0
+

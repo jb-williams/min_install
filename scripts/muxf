@@ -1,43 +1,43 @@
 #!/usr/bin/env bash
-if ! pidof tmux &>/dev/null; then
-    tmux new -s scratch -d \; new -A -s master \; list-sessions
+if ! /usr/bin/pidof /usr/bin/tmux &>/dev/null; then
+    /usr/bin/tmux new -s scratch -d \; new -A -s master \; list-sessions
     exit
     # 1 1 1
-elif ! tmux list-sessions | grep -qi 'master' &>/dev/null && ! tmux list-sessions | grep -qi 'scratch' &>/dev/null && ! tmux list-sessions | grep -qi 'attached' &>/dev/null; then
-    tmux new -s scratch -d \; new -A -s master \; list-sessions
+elif ! /usr/bin/tmux list-sessions | /usr/bin/grep -qi 'master' &>/dev/null && ! /usr/bin/tmux list-sessions | /usr/bin/grep -qi 'scratch' &>/dev/null && ! /usr/bin/tmux list-sessions | /usr/bin/grep -qi 'attached' &>/dev/null; then
+    /usr/bin/tmux new -s scratch -d \; new -A -s master \; list-sessions
     exit
     # 1 0 1
-elif ! tmux list-sessions | grep -qi 'master' &>/dev/null && tmux list-sessions | grep -qi 'scratch' &>/dev/null && ! tmux list-sessions | grep -qi 'attached' &>/dev/null; then
-    tmux new -A -s master \; list-sessions
+elif ! /usr/bin/tmux list-sessions | /usr/bin/grep -qi 'master' &>/dev/null && /usr/bin/tmux list-sessions | /usr/bin/grep -qi 'scratch' &>/dev/null && ! /usr/bin/tmux list-sessions | /usr/bin/grep -qi 'attached' &>/dev/null; then
+    /usr/bin/tmux new -A -s master \; list-sessions
     exit
     # 1 1 0
-elif ! tmux list-sessions | grep -qi 'master' &>/dev/null && ! tmux list-sessions | grep -qi 'scratch' &>/dev/null && tmux list-sessions | grep -qi 'attached' &>/dev/null; then
-    tmux new -s scratch -d \; new -A -s master \; list-sessions
+elif ! /usr/bin/tmux list-sessions | /usr/bin/grep -qi 'master' &>/dev/null && ! /usr/bin/tmux list-sessions | /usr/bin/grep -qi 'scratch' &>/dev/null && /usr/bin/tmux list-sessions | /usr/bin/grep -qi 'attached' &>/dev/null; then
+    /usr/bin/tmux new -s scratch -d \; new -A -s master \; list-sessions
     exit
     # 1 0 0
-elif ! tmux list-sessions | grep -qi 'master' &>/dev/null && tmux list-sessions | grep -qi 'scratch' &>/dev/null && tmux list-sessions | grep -qi 'attached' &>/dev/null; then
-    tmux new -s master -d
+elif ! /usr/bin/tmux list-sessions | /usr/bin/grep -qi 'master' &>/dev/null && /usr/bin/tmux list-sessions | /usr/bin/grep -qi 'scratch' &>/dev/null && /usr/bin/tmux list-sessions | /usr/bin/grep -qi 'attached' &>/dev/null; then
+    /usr/bin/tmux new -s master -d
     exit
     # 0 1 1
-elif tmux list-sessions | grep -qi 'master' &>/dev/null && ! tmux list-sessions | grep -qi 'scratch' &>/dev/null && ! tmux list-sessions | grep -qi 'attached' &>/dev/null; then
-    tmux new -s scratch -d \; attach -t master \; list-sessions
+elif /usr/bin/tmux list-sessions | /usr/bin/grep -qi 'master' &>/dev/null && ! /usr/bin/tmux list-sessions | /usr/bin/grep -qi 'scratch' &>/dev/null && ! /usr/bin/tmux list-sessions | /usr/bin/grep -qi 'attached' &>/dev/null; then
+    /usr/bin/tmux new -s scratch -d \; attach -t master \; list-sessions
     exit
     # 0 1 0
-elif tmux list-sessions | grep -qi 'master' &>/dev/null && ! tmux list-sessions | grep -qi 'scratch' &>/dev/null && tmux list-sessions | grep -qi 'attached' &>/dev/null; then
-    tmux new -s scratch -d
+elif /usr/bin/tmux list-sessions | /usr/bin/grep -qi 'master' &>/dev/null && ! /usr/bin/tmux list-sessions | /usr/bin/grep -qi 'scratch' &>/dev/null && /usr/bin/tmux list-sessions | /usr/bin/grep -qi 'attached' &>/dev/null; then
+    /usr/bin/tmux new -s scratch -d
     exit
     # 0 0 1
-elif tmux list-sessions | grep -qi 'master' &>/dev/null && tmux list-sessions | grep -qi 'scratch' &>/dev/null && ! tmux list-sessions | grep -qi 'attached' &>/dev/null; then
-    tmux attach -t master \; choose-tree
+elif /usr/bin/tmux list-sessions | /usr/bin/grep -qi 'master' &>/dev/null && /usr/bin/tmux list-sessions | /usr/bin/grep -qi 'scratch' &>/dev/null && ! /usr/bin/tmux list-sessions | /usr/bin/grep -qi 'attached' &>/dev/null; then
+    /usr/bin/tmux attach -t master \; choose-tree
     exit
     # 0 0 0
-elif tmux list-sessions | grep -qi 'master' &>/dev/null && tmux list-sessions | grep -qi 'scratch' &>/dev/null && tmux list-sessions | grep -qi 'attached' &>/dev/null; then
+elif /usr/bin/tmux list-sessions | /usr/bin/grep -qi 'master' &>/dev/null && /usr/bin/tmux list-sessions | /usr/bin/grep -qi 'scratch' &>/dev/null && /usr/bin/tmux list-sessions | /usr/bin/grep -qi 'attached' &>/dev/null; then
     read -r -p "New sesh(name): " newSession
     if [[ -z "$newSession" ]]; then
-        tmux choose-tree
+        /usr/bin/tmux choose-tree
         exit
     else
-        tmux new -s "$newSession" -d \; switch-session -t "$newSession" \; list-sessions
+        /usr/bin/tmux new -s "$newSession" -d \; switch-session -t "$newSession" \; list-sessions
         exit
     fi
 fi

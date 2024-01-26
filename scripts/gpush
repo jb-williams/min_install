@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# Copyright 2023, Jeffrey Williams, All rights reserved
+# USE -- ctrl+j and ctrl+k down/up respectively for file names
+# USE shift+tab to select multiple items
+# (not implemented properly yet) # if preview of file is there use -- alt+j and alt+k down/up respectively for the preview of file contents
+if ! command -v fzf &>/dev/null; then
+	printf "\n\tfzf not found\n" 
+	read -p "Would you like to install?: " -n 1 -r
+	if [[ $REPLY =~ ^[Yy]$ ]]; then
+		if command -v apt &>/dev/null; then
+			sudo apt install fzf
+		else
+			printf "\n\t\tapt not found\n\tuse your pkg manager to install fzf\n" && exit 1
+		fi
+	else
+		printf "exiting program" && exit 0
+	fi
+fi
+if [[ "$1" = "\*" ]]; then
+	git add .
+	read -p "Add commit message: " -r message
+	git commit -m "$message"
+	git push
+	exit 0
+else
+	untrackedFiles="$(/usr/bin/git status -uall -s | sort -u | /usr/bin/fzf -m --prompt="Add Files : " --border --margin=5% --color=dark --height=100% --reverse --header-first --header=" GPUSH ")" 
+
+	if [[ "$untrackedFiles" ]]; then
+		for i in $(echo -e "$untrackedFiles" | awk '{print $NF}'); do
+			git add "$i"
+		done
+
+		read -p "Would you like to Commit?(Y/n): " -n 1 -r
+		if [[ $REPLY =~ ^[Yy]$ ]]; then
+			printf "\n"
+			read -p "Add commit message: " -r message
+			git commit -m "$message"
+
+			printf "\n"
+			read -p "Would you like to Push?(Y/n): " -n 1 -r
+			if [[ $REPLY =~ ^[Yy]$ ]]; then
+				git push
+				printf "Exiting Program\n" && exit 0
+			else
+				printf "Exiting Program\n" && exit 0
+			fi
+		else
+			printf "Need to enter Y/n\n"
+			printf "Exiting Program\n" && exit 0
+		fi
+		exit 0
+	else
+		exit 1
+	fi
+fi
