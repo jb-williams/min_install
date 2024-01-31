@@ -5,18 +5,37 @@ bold="\e[1m"
 green="\e[32m"
 orange="\e[33m"
 clipfile="/tmp/tmpclp.txt"
+
+# if clipfile exists, create view of clipfile and put selected text from clipfile to clipboard
 if [[ -f "$clipfile" ]]
 then
-    clpman="$(bat "$clipfile" | uniq | fzf --prompt="Copy : " --border --margin=5% --color=dark --height=100% --reverse --header-first --header=" CLIPXF ")"
+    clpman="$("$HOME"/.cargo/bin/bat "$clipfile" | uniq | /usr/bin/fzf -m --prompt="Copy : " --border --margin=5% --color=dark --height=100% --reverse --header-first --header=" CLIPXF ")"
     if [[ "$clpman" ]];
     then
-        echo -e "$clpman" | /usr/bin/xclip -sel c
+        /usr/bin/echo -e "$clpman" | /usr/bin/xclip -sel c
     else
-        exit 0
+        exit 1
     fi
+
+# if clipfile doesn't exist, create it, copy clipboard into clipfile, then create view of clipfile and, if desired, copy some text from clipfile back to clipboard
 else
-    touch "$clipfile" && chmod 600 "$clipfile" && echo -e "$clpman" | /usr/bin/xclip -sel c && printf "${green}No ${bold}${orange}Clipman${normal}${green}, empty ${bold}%s${normal}${green} created!\n" "$clipfile"
-    exit 0
+    #/usr/bin/touch "$clipfile" \
+		#&& /usr/bin/chmod 600 "$clipfile" \
+		#&& /usr/bin/echo -e "$clpman" | /usr/bin/xclip -sel c \
+		#&& printf "${green}No ${bold}${orange}Clipman${normal}${green}, empty ${bold}%s${normal}${green} created!\n" "$clipfile"
+    /usr/bin/touch "$clipfile" \
+		&& /usr/bin/chmod 600 "$clipfile" \
+		&& /usr/bin/echo -e "$(/usr/bin/xclip -sel c -o)" >> "$clipfile" \
+		&& printf "${green}No ${bold}${orange}Clipman${normal}${green}, empty ${bold}%s${normal}${green} created!\n" "$clipfile"
+
+    clpman="$("$HOME"/.cargo/bin/bat "$clipfile" | uniq | /usr/bin/fzf --prompt="Copy : " --border --margin=5% --color=dark --height=100% --reverse --header-first --header=" CLIPXF ")"
+    if [[ "$clpman" ]];
+    then
+        #/usr/bin/echo -e "$clpman" 
+        /usr/bin/echo -e "$clpman" | /usr/bin/xclip -sel c
+    else
+        exit 1
+    fi
 fi
 exit 0
 

@@ -2,12 +2,40 @@
 set -eo pipefail
 
 #/usr/bin/echo -e "" | /usr/bin/xclip -selection c && echo "" > /tmp/tmpclp.txt
+#clipfile="/tmp/tmpclp.txt"
+#if [[ -f "$clipfile" ]]
+#then
+    #/usr/bin/echo -e "" | /usr/bin/xclip -selection c && /usr/bin/echo "" > "$clipfile"
+#else
+    #/usr/bin/touch "$clipfile" && /usr/bin/chmod 600 "$clipfile" && printf "${green}No ${bold}${orange}Clipman${normal}${green}, empty ${bold}%s${normal}${green} created!\n" "$clipfile"
+    #exit 0
+#fi
+#exit 0
+normal="\e[0m"
+bold="\e[1m"
+green="\e[32m"
+orange="\e[33m"
+
 clipfile="/tmp/tmpclp.txt"
-if [[ -f "$clipfile" ]]
+# check if file exists
+if [[ ! -f "$clipfile" ]]
 then
-    /usr/bin/echo -e "" | /usr/bin/xclip -selection c && echo "" > "$clipfile"
+	printf "${green}No ${bold}${orange}Clipman${normal}${green}, ${bold}%s${normal}${green} not created yet!\n" "$clipfile"
+
+# if file exists, check if it is empty
+elif [[ -f "$clipfile" ]] && [[ -z $(cat $clipfile) ]]
+then
+	printf "${green}Empty ${bold}${orange}Clipman${normal}${green}, ${bold}%s${normal}${green} created but empty!\n" "$clipfile"
+
+# if file exists and is not empty, clear it
+elif [[ -f "$clipfile" ]] && [[ -n $(cat $clipfile) ]]
+then
+	printf "${green}Clearing ${bold}${orange}Clipman${normal}${green}, ${bold}%s${normal}${green} cleared!\n" "$clipfile"
+    /usr/bin/echo -e "" | /usr/bin/xclip -selection c && /usr/bin/echo "" > "$clipfile"
+
 else
-    touch "$clipfile" && chmod 600 "$clipfile" && printf "${green}No ${bold}${orange}Clipman${normal}${green}, empty ${bold}%s${normal}${green} created!\n" "$clipfile"
-    exit 0
+	exit 1
 fi
+
 exit 0
+

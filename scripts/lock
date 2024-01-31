@@ -1,26 +1,31 @@
 #!/usr/bin/env bash
 ## script made to menu-nize shutdown,reboot,logout in the terminal
-set -eo pipefail
+set -eou pipefail
 clear
 
-Option="$(/usr/bin/echo -e "Logout\nSuspend\nReboot\nShutdown\nCancel" | /usr/bin/fzf --prompt="Please Make s Selection : " --border=rounded --margin=10% --color=dark --height 75% --reverse --header="	LOGOUT MENU " --info=hidden --header-first)"
+Option="$(/usr/bin/echo -e "Lock\nLogout\nSuspend\nReboot\nShutdown\nCancel" | /usr/bin/fzf --prompt="Please Make s Selection : " --border=rounded --margin=10% --color=dark --height 75% --reverse --header="	LOGOUT MENU " --info=hidden --header-first)"
 
 case $Option in
 	Lock)
-		/usr/bin/slock
+		/usr/bin/xflock4 || printf "error locking"; exit 1
+		#/usr/local/bin/slock || printf "error locking"; exit 1
+		#/usr/bin/light-locker-command -l || printf "error locking"; exit 1
 		;;
 	Logout)
-        /usr/bin/xfce4-session-logout -l       #### used this if I was using xfce4
-        #kill -9 -1         #### used this if I was using window-manager(CWM)
+        /usr/bin/xfce4-session-logout -l || printf "error logging out"; exit 1       #### used this if I was using xfce4
+        #/usr/bin/kill -9 -1         #### used this if I was using window-manager(CWM)
 		;;
 	Suspend)
-		/usr/bin/systemctl suspend
+		exec $(/usr/bin/light-locker-command -l && /usr/bin/systemctl suspend) || printf "error logging out and suspending"; exit 1    #### used this if I was using xfce4
+		#$(/usr/bin/xfce4-session-logout -l && /usr/bin/systemctl suspend) || printf "error logging out and suspending"; exit 1    #### used this if I was using xfce4
+		#/usr/local/bin slock 2>/dev/null && /usr/bin/systemctl suspend
+		#/usr/bin/light-locker-command -l && /usr/bin/systemctl suspend
 		;;
 	Reboot)
-		/usr/bin/sudo /sbin/reboot
+		/usr/bin/sudo /usr/bin/systemctl reboot || printf "error rebooting"; exit 1
 		;;
 	Shutdown)
-		/usr/bin/sudo /sbin/shutdown -h now
+		/usr/bin/sudo /sbin/shutdown -h now || printf "error shutting down"; exit 1
 		;;
 	*)
 		;;
