@@ -1,0 +1,172 @@
+#!/bin/sh
+# MIT License
+# Copyright (c) 2023 Jb Williams
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+# The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
+# should be POSIX compliant
+# it assumes git repositories are $HOME/Gits
+
+###############################################################################
+# ##### CHANGE THIS IF YOU HAVE YOUR GIT REPO CLONED ELSEWHERE ################
+###############################################################################
+# go to alacritty git repo
+cd "${HOME}/Gits/alacritty" || exit 1
+###############################################################################
+###############################################################################
+VERSION="0.1"
+VERBOSE="FALSE"
+CHK_VERS="FALSE"
+bin_dest="/usr/local/bin/"
+bin_file="target/release/alacritty"
+man1_dest="/usr/share/man/man1/"
+man5_dest="/usr/share/man/man5/"
+man_files="extra/man/alacritty.1.scd extra/man/alacritty-msg.1.scd extra/man/alacritty.5.scd extra/man/alacritty-bindings.5.scd"
+
+usageMessage () {
+    printf "
+%s
+%s%s
+%s
+\tVersion: %s
+
+This program checks if the local repo for Alacritty is up-to-date, if not,
+update repo, build binary, build manual pages, change to correct permission and
+copy them to the proper directories.
+Assumes repository is in ~/Gits.
+
+Usage: %s [-?hvV]
+
+  Where:
+    -v = Version -- just the version is displayed
+    -V = Verbose -- debug output displayed
+    -h = Help    -- display this message
+    -? = Help    -- display this message
+
+" "" "${1:+Program: ${1}}" "" "" "${2}" "${1##*/}"
+}
+
+checkUpdate () {
+    # check if remote repo is ahead of local repo
+    posibleUpdate="$(/usr/bin/git remote update >/dev/null 2>&1 && /usr/bin/git status -uno | /usr/bin/grep -o "up to date")"
+    if [ "${posibleUpdate}" = "up to date" ]; then
+        printf "Git Repo already up to date!\n" && exit 0
+    else
+        printf "Seems there is an Update! Continue? (Y/N): "
+        read -r reply
+        case ${reply} in
+            [Yy])
+                ;;
+            *)
+                printf "\nNot updating Local Repo!\n" && exit 0
+                ;;
+        esac
+    fi
+}
+
+changePerm () {
+    ## takes in file name if its the binary 755, if man 644
+    if [ "$(printf "%s" "${1}" | /usr/bin/awk -F'/' '{print $NF}')" = "alacritty" ]; then
+#    if [ "$(echo "${1}" | /usr/bin/awk -F'/' '{print $NF}')" = "alacritty" ]; then
+#         /usr/bin/sudo chmod u=rwx,g=rx,o=rx "$1" || printf "%s %s!" "failed changing perm on" "${1}${2}"
+        /usr/bin/sudo chmod u=rwx,g=rx,o=rx "${1}" || printf "%s %s%s!" "failed changing perm on" "${1}" "${2}"
+    elif [ "$(printf "%s" "${1}" | /usr/bin/awk -F'.' '{print $NF}')" = "gz" ]; then
+#    elif [ "$(echo "${1}" | /usr/bin/awk -F'.' '{print $NF}')" = "gz" ]; then
+        /usr/bin/sudo chmod u=rw,g=r,o=r  "${1}" || printf "%s %s!\n" "failed changing perm on" "${1}"
+    else
+        printf "%s!\n" "some error, wasn't passed anything named 'alacritty' or 'gz'" && exit 2
+    fi
+    return
+}
+
+copyFile () {
+    /usr/bin/sudo cp "${1}" "${2}" || printf "%s %s %s!\n" "failed to copy" "${1}" "${2}"
+    return
+}
+
+buildBin () {
+    /usr/bin/git pull || exit 1
+    ~/.cargo/bin/cargo build --release --no-default-features --features=x11 || exit 1
+    return
+}
+
+buildMan () {
+    old_filename="${1}"
+    new_filename="$(printf "%s"  "${old_filename}" | /usr/bin/awk -F'.' '{print $1"."$2}')"
+#   new_filename="$(echo "${old_filename}" | /usr/bin/awk -F'.' '{print $1"."$2}')"
+#   which_man="$(echo "$new_filename" | /usr/bin/awk -F'.' '{print $2}')"
+    /usr/bin/scdoc < "${old_filename}" >> "${new_filename}" || printf "%s %s!\n" "failed making sdoc from" "${old_filename}"
+    /usr/bin/gzip -f "${new_filename}" || printf "%s %s!\n" "failed gzipping" "${new_filename}"
+    return
+}
+
+# get flags if given, version, verbose(set -x), then usage message itself
+while getopts "vVh?" OPTION
+do
+    case "$OPTION" in
+        v) CHK_VERS="TRUE";;
+        V) VERBOSE="TRUE";;
+        \?|h) usageMessage "${0}" "${VERSION}" && exit 1 ;;
+    esac
+done
+
+shift $((OPTIND - 1))
+# set based on flags given
+[ "${VERBOSE}" = "TRUE" ] && set -x
+[ "${CHK_VERS}" = "TRUE" ] && printf "#\n#\t%s\n" "${0##*/}"
+[ "${CHK_VERS}" = "TRUE" ] && printf "# Version........: %s\n" "# Version........: ${VERSION}" && exit 0
+
+# check if local repo is behind
+checkUpdate || exit 1
+
+
+# Make sure man dirs are created
+if [ ! -d /usr/local/share/man/man1 ]; then
+    /usr/bin/sudo mkdir /usr/local/share/man/man1 || exit 1
+fi
+if [ ! -d /usr/local/share/man/man5 ]; then
+    /usr/bin/sudo mkdir /usr/local/share/man/man5 || exit 1
+fi
+
+# compile binary
+buildBin || exit 1
+
+# change perm of binary
+changePerm "${bin_file}" || exit 1
+
+# copy binary to destination
+copyFile "${bin_file}" "${bin_dest}" || exit 1
+
+# build man files
+for each_manfile in ${man_files}; do
+    buildMan "${each_manfile}" || exit 1
+done
+
+# change file permissions then copy them to proper man destination
+for each_manfile in ${man_files}; do
+    gz_file="$(/usr/bin/ls "${each_manfile}" | /usr/bin/awk -F'.' '{print $1"."$2".gz"}')"
+    which_man="$(/usr/bin/ls "${each_manfile}" | /usr/bin/awk -F'.' '{print $2}')"
+    changePerm "${gz_file}" || exit 1
+    if  [ "${which_man}"  = 1 ]; then
+        copyFile "${gz_file}" "${man1_dest}" || exit 1
+    elif  [ "${which_man}"  = 5 ]; then
+        copyFile "${gz_file}" "${man5_dest}" || exit 1
+    fi
+done
+
+# install desktop file and update-desktop database
+/usr/bin/sudo desktop-file-install extra/linux/Alacritty.desktop \
+    && /usr/bin/sudo update-desktop-database
+
+# Copy icon file to proper spot
+/usr/bin/sudo cp extra/logo/alacritty-term+scanlines.svg /usr/share/pixmaps/Alacritty.svg \
+    && /usr/bin/sudo chmod u=rw,g=r,o=r /usr/share/pixmaps/Alacritty.svg
+
+cd "${OLDPWD}" || exit 1
+exit 0
+
+## requires
+# * cmake
+## * pkg_config
+# * libfontconfig1-dev

@@ -1,22 +1,110 @@
-#!/usr/bin/env bash
+#!/bin/sh
+#/usr/bin/env bash
+# MIT License
+# Copyright (c) 2023 Jb Williams
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+# The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
+# Should be POSIX Compliant now
+# assumes and places the extracted go directory and moves it to /usr/local/bin
 
-## dirty way of updating golang
-VERSION="$(curl https://go.dev/dl/ | grep -iE '<span>go[0-9].[0-9]{2}.[0-9]{1,2}.linux-amd64.tar.gz' | sed -e 's/<[^>]*.//g' | tr -d ' ')"
-echo "Your go version is $(go version 2>/dev/null)"
-read -p "Curl read Current Go Version as $VERSION : Would you like to Continue?(Y/n): " -n 1 -r
-if [[ "$REPLY" =~ ^[Yy]$ ]]; then
-    pushd /tmp || exit
-    wget https://go.dev/dl/"$VERSION"
-    tar xvfz "$VERSION"
-    if [[ -d /usr/local/go ]]; then
-        sudo rm -rf /usr/local/go
-        sudo mv go /usr/local/
-        rm "$VERSION"
-    else 
-        sudo mv go /usr/local/
+VERSION="0.1"
+VERBOSE="FALSE"
+CHK_VERS="FALSE"
+# Get Golang Version and the Given Golang Hash for linux
+go_DLpage="$(/usr/bin/curl https://go.dev/dl/ | /usr/bin/grep -iE 'href="/dl/go[0-9].[0-9]{2}.[0-9]{1,2}.linux-amd64.tar.gz"' -m 2 -A 6 | tail -7 | sed -e 's/<[^>]*.//g' | tr '\n' ' ')"
+go_version="$(printf "%s" "${go_DLpage}" | awk '{print $1}')"
+dl_hash="$(printf "%s" "${go_DLpage}" | awk '{print $6}')"
+local_go="$(go version 2>/dev/null)"
+
+usageMessage () {
+    printf "
+%s
+%s%s
+%s
+\tVersion: %s
+
+This program checks if the local Golang Version is behind, if so, download new
+version to \$TEMP, check if the hash of the tar.gz is the same as the hash given on the
+website. If the hashes match extract the tar.gz and move the files to /usr/local/
+then delete tar.gz in \$TEMP.
+
+Usage: %s [-?hvV]
+
+  Where:
+    -v = Version -- just the version is displayed
+    -V = Verbose -- debug output displayed
+    -h = Help    -- display this message
+    -? = Help    -- display this message
+
+" "" "${1:+Program: ${1}}" "" "" "${2}" "${1##*/}"
+}
+
+install_Golang () {
+    printf "%s %s %s" "Curl read the current version as" "${go_version}" " : Would you like to Continue?(Y/n): "
+    read -r reply
+    if [ "${reply}" = "Y" ] || [ "${reply}" = "y" ]; then
+        # Download to  $TEMP dir
+        cd "${TEMP}" || exit 1
+        /usr/bin/wget "https://go.dev/dl/${go_version}" || exit 1
+
+        # get sha256 of the file you are wanting to verify
+        if [ -n "${go_version}" ] && [ -f "${go_version}" ] && [ ! -d "${go_version}" ]; then
+            tar_hash="$(shasum -a256 "${go_version}" | awk '{print $1}')"
+            [ -n "${tar_hash}" ] || exit 1
+        else
+            printf "%s\n" "Unable to find the '.tar.gz', may have been an error downloading!"
+            cd "${OLDPWD}" || exit 1
+            exit 1
+        fi
+
+        # Check if the Golang .tar.gz's hash matches the given hash from the download page
+        if [ "${dl_hash}" = "${tar_hash}" ]; then
+            # Decompress and move to proper place removing the older version if it exists
+            printf "%s!\n" "Hashes Match"
+            /usr/bin/tar xfz "${go_version}" || exit 1
+            if [ -d /usr/local/go ]; then
+                /usr/bin/sudo rm -rf /usr/local/go || exit 1
+                /usr/bin/sudo mv go /usr/local/ || exit 1
+                /usr/bin/rm "${go_version}" || exit 1
+            else
+                /usr/bin/sudo mv go /usr/local/ || exit 1
+                /usr/bin/rm "${go_version}" || exit 1
+            fi
+        else
+            # Abort if the .tar.gz's hash doesn't match the given hash from the download page
+            printf "%s!!!!\n" "HASHES DON'T MATCH!!! ABORTING!!"
+            rm "${go_version}" || exit 1
+        fi
+        cd "${OLDPWD}" || exit 1
+    else
+        printf "\n" && exit 0
     fi
-    popd || return
+    exit 0
+}
+
+while getopts "vVh?" OPTION; do
+    case "$OPTION" in
+        v) CHK_VERS="TRUE" ;;
+        V) VERBOSE="TRUE" ;;
+        \?|h) usageMessage "${0}" "${VERSION}" && exit 1 ;;
+    esac
+done
+
+shift $((OPTIND - 1))
+
+[ "$VERBOSE" = "TRUE" ] && set -x
+[ "$CHK_VERS" = "TRUE" ] && printf "#\n#\t%s\n" "${0##*/}"
+[ "$CHK_VERS" = "TRUE" ] && printf "%s\n" "# Version........: ${VERSION}" && exit 0
+
+# Prompt User, asking if they want to continue
+if [ -z "${local_go}" ]; then
+    printf "%s!\n" "Golang not Installed yet"
+    install_Golang || exit 0
 else
-    exit
+    printf "%s!\n" "Your version of golang is ${local_go}"
+    install_Golang || exit 0
 fi
-exit
+
+exit 0
