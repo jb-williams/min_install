@@ -1,5 +1,5 @@
 #BROWSER=/usr/local/bin/firefox
-#BROWSER=/bin/firefox
+BROWSER=/bin/firefox
 EDITOR=/usr/local/bin/vim
 export EDITOR=vim
 export XDG_DATA_DIRS=/usr/local/share

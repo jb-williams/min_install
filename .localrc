@@ -1,25 +1,58 @@
+#set -x
+#set -o vi
+umask 027
 export TERM=xterm-256color
-export EDITOR=/bin/nvim
-export GOPATH=~/go
-export PATH=${PATH}:/usr/local/go/bin:${GOPATH}/bin:${HOME}/.cargo/bin:${HOME}/.cargo/env:${HOME}/.local/bin:${HOME}/deb:${HOME}/scripts
+#export MESA_LOADER_DRIVER_OVERRIDE=i965
 export LESSHISTFILE=-
+export EDITOR=/opt/nvim-linux64/bin/nvim
+export MANPAGER=/bin/less
+# export MANPAGER=/opt/nvim-linux64/bin/nvim
+# export MANPAGER=/home/binford/.cargo/bin/bat
 export BAT_THEME="Dracula"
-export BAT_PAGER="\less -RF"
+#export EDITOR=/bin/nvim
+# export EDITOR=/bin/nvim
+export GOROOT=/usr/local/go
+export GOPATH=${HOME}/go
+export PATH=$PATH:/etc/firewallsetup:${HOME}/.local/bin:${HOME}/bin:${HOME}/scripts:/usr/local/go/bin:${GOPATH}/bin:${HOME}/.cargo/env:/opt/nvim-linux64/bin
+export GOPRIVATE=${GOPATH}/code
+export GITDIR=${HOME}/Gits
+export SCRIPTDIR=${HOME}/scripts
+export WIKIDIR=${HOME}/.config/vimwiki
+export TEMPDIR="$(find ${TEMP} -iname 'tmp.*' -type d -exec /usr/bin/ls -ltd {} 2>/dev/null  \; | head -1 | awk '{print $NF}' 2>/dev/null)"
+if [ -z "${TEMPDIR}" ];then
+	mktemp -d --suffix="-$(date '+%m-%d-%Y')" &>/dev/null
+fi
+export TEMPDIR="$(/usr/bin/ls -ltdr ${TEMP}/tmp.* 2>/dev/null | head -1 | awk '{print $NF}' 2>/dev/null)"
+
+# kill tracker miner
+"${HOME}"/scripts/kill-tracker-miner.sh
+
 #History control
 HISTCONTROL=ignoredups:erasedups:ignorespace
-HISTSIZE=2000000
-HISTFILESIZE=2000000
-shopt -s histappend
+HISTSIZE=2000
+HISTFILESIZE=1000
+
 # More shopt stuff
-shopt -s autocd
-shopt -s cdspell
+shopt -s autocd # changed to named dir
+shopt -s cdspell # autocorrects cd misspellings
+shopt -s dirspell
+shopt -s cmdhist # save multi-line commands in history as single line
+shopt -s dotglob
+shopt -s histappend # no not overwrite history
+shopt -s expand_aliases # expand aliases
+shopt -s checkwinsize # check term size when bash regains control
+
+# not sure, working on suspend( if coming back from suspend X11 give black screen
+#xset dpms 0 0 0 && xset s noblank  && xset s off  
+# ignore upper and lowercase when TAB completion
+bind "set completion-ignore-case on"
+
+# if [[ -f /etc/bash_completion ]] && ! shopt -oq posix; then
 if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
     . /etc/bash_completion
 fi
+
 # 'Safe' version of __git_ps1 to avoid errors on systems that don't have it
-gitPrompt() {
-  command -v __git_ps1 > /dev/null && __git_ps1 " (%s)"
-}
 # Colours have names too. Stolen from Arch wiki
 txtblk='\[\e[0;30m\]' # Black - Regular
 txtred='\[\e[0;31m\]' # Red
@@ -30,7 +63,7 @@ txtpur='\[\e[0;35m\]' # Purple
 txtcyn='\[\e[0;36m\]' # Cyan
 #txtwht='\[\e[0;39m\]' # Change White to Green on one comp for some reason
 txtwht='\[\e[0;32m\]' # Change White to Green on one comp for some reason
-#txtwht='\[\e[0;37m\]' # White
+mywht='\[\e[0;37m\]' # White
 bldblk='\[\e[1;30m\]' # Black - Bold
 bldred='\[\e[1;31m\]' # Red
 bldgrn='\[\e[1;32m\]' # Green
@@ -64,15 +97,76 @@ pathC="${txtgrn}"
 gitC="${txtpur}"
 pointerC="${txtgrn}"
 normalC="${txtwht}"
+
+#gitColor() {
+	#if [[ "${__git_ps1}" =~ "*" ]]; then # if repo is dirty
+		#gitC="${txtred}"
+	#elif [[ "${__git_ps1}" =~ "$" ]]; then # if something stashed
+		#gitC="${txtred}"
+		##gitC="${txtylw}"
+	#elif [[ "${__git_ps1}" =~ "%" ]]; then # if there are only untracked files
+		#gitC="${txtred}"
+		##gitC="${mywhite}"
+	#elif [[ "${__git_ps1}" =~ "+" ]]; then # if there are staged files
+		#gitC="${txtred}"
+		##gitC="${txtcyn}"
+	#fi
+#}
+gitPrompt() {
+	command -v __git_ps1 > /dev/null && __git_ps1 " (%s)"
+}
+
 # Red name for root
 if [ "${UID}" -eq "0" ]; then 
   nameC="${txtred}" 
 fi
-export PS1="${nameC}\u:${pathC}\w${gitC}\$(gitPrompt)${pointerC}▶${normalC} "
-if [ -f ${HOME}/Gits/alacritty/extra/completions/alacritty.bash ]; then 
-    source ${HOME}/Gits/alacritty/extra/completions/alacritty.bash
+# Patent Pending Prompt
+#URGENT="❗"
+#DUETOMORROW="📅 "
+#DUETODAY="😱 "
+#OVERDUE="☠ "
+#task_indicator() {
+    #TASK="task"
+    #if [[ "$($TASK +READY +OVERDUE count)" -gt "0" ]]; then
+        #echo "${txtred}${OVERDUE}"
+    #elif [[ "$($TASK +READY +DUETODAY count)" -gt "0" ]]; then
+        #echo "${txtylw}${DUETODAY}"
+    #elif [[ "$($TASK +READY +TOMORROW count)" -gt "0" ]]; then
+        #echo "${mywht}${DUETOMORROW}"
+    #elif [[ "$($TASK +READY urgency > 10 count)" -gt "0" ]]; then
+        #echo "${bldred}{$URGENT}"
+    #else
+        #echo ''
+    #fi
+
+#}
+# Patent Pending Prompt
+# working \/
+export PS1="${nameC}\u${pointerC}:${nameC}[${pointerC}\w${gitC}]${pointerC}:${gitC}$(git_status.sh 2>/dev/null)${pointerC}▶ ${normalC}"
+#export PS1="${nameC}\u${pointerC}:${nameC}[${pointerC}\w${gitC}]${pointerC}:$(task_indicator)${gitC}$(git_status.sh 2>/dev/null)${pointerC}▶ ${normalC}"
+# Local settings go last
+#
+export LS_COLORS="$(dircolors ~/.dircolors)"
+# enable color support of ls and also add handy aliases
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    #alias dir='dir --color=auto'
+    #alias vdir='vdir --color=auto'
+
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
 fi
 
-if [ -f ${HOME}/.gf/gf-completion.bash ]; then
-    source ${HOME}/.gf/gf-completion.bash
+if [ -f ~/Gits/alacritty/extra/completions/alacritty.bash ]; then 
+    source $HOME/Gits/alacritty/extra/completions/alacritty.bash
 fi
+
+if [ -f ~/.gf/gf-completion.bash ]; then
+    source $HOME/.gf/gf-completion.bash
+fi
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+#⏰
+#/usr/games/fortune
